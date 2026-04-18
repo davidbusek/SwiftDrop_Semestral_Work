@@ -1,0 +1,84 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram name="Page-1" id="CBaR6Q9aXB50n7M2Fu3F">
+    <mxGraphModel dx="1042" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-70" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#ffffff;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="550" width="290" x="880" y="85" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-69" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#ffffff;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="550" width="290" x="480" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-54" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fillColor=#ffffff;strokeColor=none;" value="" vertex="1">
+          <mxGeometry height="550" width="290" x="80" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-63" parent="1" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shadow=0;dashed=0;strokeWidth=1;shape=mxgraph.android.phone2;strokeColor=#c0c0c0;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
+          <mxGeometry height="580" width="300" x="870" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-62" parent="1" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shadow=0;dashed=0;strokeWidth=1;shape=mxgraph.android.phone2;strokeColor=#c0c0c0;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
+          <mxGeometry height="580" width="300" x="470" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-61" parent="1" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shadow=0;dashed=0;strokeWidth=1;shape=mxgraph.android.phone2;strokeColor=#c0c0c0;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
+          <mxGeometry height="580" width="300" x="70" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-41" parent="1" style="text;html=1;strokeColor=default;fillColor=#f5f5f5;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;sketch=1;curveFitting=1;jiggle=2;" value="Order #123 - Active Delivery" vertex="1">
+          <mxGeometry height="30" width="260" x="90" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-42" parent="1" style="shape=rect;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;sketch=1;curveFitting=1;jiggle=2;" value="MAP VIEW" vertex="1">
+          <mxGeometry height="240" width="260" x="90" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-43" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;curveFitting=1;jiggle=2;" value="📍 Address: Street, City" vertex="1">
+          <mxGeometry height="30" width="240" x="100" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-44" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;spacingLeft=10;fillColor=#fff2cc;strokeColor=#d6b656;sketch=1;curveFitting=1;jiggle=2;" value="Customer: Marek Hlaváček&lt;br&gt;Phone: +420 857 837 989&lt;br&gt;Status: Delivering" vertex="1">
+          <mxGeometry height="80" width="260" x="90" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-45" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;sketch=1;curveFitting=1;jiggle=2;" value="Call Customer" vertex="1">
+          <mxGeometry height="40" width="120" x="90" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-46" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;sketch=1;curveFitting=1;jiggle=2;" value="Open in Maps" vertex="1">
+          <mxGeometry height="40" width="120" x="230" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-48" parent="1" style="text;html=1;strokeColor=default;fillColor=#f5f5f5;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;sketch=1;curveFitting=1;jiggle=2;" value="At Delivery Location" vertex="1">
+          <mxGeometry height="30" width="260" x="490" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-49" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" value="Order Summary:" vertex="1">
+          <mxGeometry height="30" width="240" x="500" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-50" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" value="• 2x Pizza&#xa;• 1x Cola" vertex="1">
+          <mxGeometry height="60" width="220" x="510" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-51" parent="1" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2;sketch=1;curveFitting=1;jiggle=2;" value="Hand the food to the customer and confirm delivery" vertex="1">
+          <mxGeometry height="60" width="240" x="500" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-52" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;fontStyle=1;sketch=1;curveFitting=1;jiggle=2;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;MARK AS DELIVERED&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="240" x="500" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-53" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#0000EE;fontStyle=4;sketch=1;curveFitting=1;jiggle=2;" value="Customer not reachable?" vertex="1">
+          <mxGeometry height="30" width="240" x="500" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-55" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=18;fontColor=#2D7600;sketch=1;curveFitting=1;jiggle=2;" value="Delivery Complete!" vertex="1">
+          <mxGeometry height="40" width="280" x="880" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-56" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;curveFitting=1;jiggle=2;" value="Time Delivered: 18:45&#xa;Status: Delivered" vertex="1">
+          <mxGeometry height="60" width="240" x="900" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-57" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;spacing=5;sketch=1;curveFitting=1;jiggle=2;" value="System has triggered &#39;Submit Review&#39; option for the customer" vertex="1">
+          <mxGeometry height="80" width="240" x="900" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-58" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;fontStyle=1;sketch=1;curveFitting=1;jiggle=2;" value="&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;Ready for Next Task&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="240" x="900" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-66" edge="1" parent="1" source="YRcSqepqQYhQ7-_pzAj5-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="YRcSqepqQYhQ7-_pzAj5-63">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="YRcSqepqQYhQ7-_pzAj5-68" edge="1" parent="1" source="YRcSqepqQYhQ7-_pzAj5-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="YRcSqepqQYhQ7-_pzAj5-62">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="420" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
