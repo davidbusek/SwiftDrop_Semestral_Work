@@ -1,0 +1,130 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "SwiftDrop - Multi-Restaurant Delivery";
+}
+
+@section Styles {
+    <style>
+        .hero-section {
+            padding: 120px 0 80px 0;
+            background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.08) 0%, transparent 60%);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .highlight-text {
+            color: #00f0ff;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .food-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #39ff14;
+            filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.4));
+        }
+
+        .step-number {
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.05);
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            z-index: 0;
+        }
+
+        .step-content {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+}
+
+<div class="hero-section">
+    <div class="container text-center">
+        <div class="d-inline-block px-3 py-1 mb-4 rounded-pill" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3);">
+            <span class="text-neon fw-bold"><i class="bi bi-stars"></i> Update:</span> Multi-orders are now live!
+        </div>
+
+        <h1 class="main-title mb-4">
+            Why compromise? <br />
+            Get <span class="highlight-text">a bit of everything.</span>
+        </h1>
+
+        <p class="lead text-light mb-5 mx-auto" style="max-width: 600px; opacity: 0.9; font-size: 1.25rem;">
+            The first delivery app where you can mix a burger, pad thai, and sushi in a single order. And the delivery fee? <strong class="text-white">You only pay once.</strong>
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Restaurants" asp-action="Index" class="btn cyber-btn py-3 px-5 fs-5 fw-bold">
+                <i class="bi bi-search me-2"></i> Find Food
+            </a>
+            <a href="#how-it-works" class="btn btn-outline-light py-3 px-4 fs-5" style="border-color: rgba(255,255,255,0.2);">
+                How it works
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 py-5" id="how-it-works">
+    <h2 class="text-center text-white mb-5 fw-bold">One cart, infinite possibilities</h2>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="cyber-card p-4 h-100 position-relative overflow-hidden">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="food-icon">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <h4 class="text-white mb-3 fw-bold">Multiple Spots</h4>
+                    <p style="color: #a0aec0;">Your friend wants pizza, you want Asian. No problem. Add dishes from up to three different places into one cart.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="cyber-card p-4 h-100 position-relative overflow-hidden">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="food-icon" style="color: #00f0ff;">
+                        <i class="bi bi-piggy-bank"></i>
+                    </div>
+                    <h4 class="text-white mb-3 fw-bold">One Delivery Fee</h4>
+                    <p style="color: #a0aec0;">Our smart system merges pickups into a single efficient route. You always pay just one flat delivery fee.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="cyber-card p-4 h-100 position-relative overflow-hidden">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="food-icon" style="color: #ff00ff; filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.4));">
+                        <i class="bi bi-bicycle"></i>
+                    </div>
+                    <h4 class="text-white mb-3 fw-bold">Arrives Together</h4>
+                    <p style="color: #a0aec0;">The courier picks up all items along the way and delivers them together. Hot food for the whole group at the exact same time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="glass-panel p-5 border-neon text-center rounded-4" style="background: linear-gradient(135deg, rgba(20,25,40,0.9) 0%, rgba(10,15,30,0.9) 100%);">
+        <h2 class="text-white mb-3 fw-bold">Hungry? Don't wait.</h2>
+        <p class="mb-4 fs-5" style="color: #a0aec0;">Explore local spots and build your ultimate feast.</p>
+        <a asp-controller="Restaurants" asp-action="Index" class="btn cyber-btn cyber-btn-success py-3 px-5 fs-5 rounded-pill fw-bold">
+            <i class="bi bi-cart3 me-2"></i> Browse Restaurants
+        </a>
+    </div>
+</div>

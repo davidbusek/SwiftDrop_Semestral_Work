@@ -1,0 +1,58 @@
+﻿@model IEnumerable<SwiftDrop.Models.Restaurant>
+@{
+    ViewData["Title"] = "Restaurants Hub";
+    Layout = "~/Pages/Shared/_Layout.cshtml"; 
+}
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-neon text-uppercase fw-bold">Restaurants Hub</h2>
+            <p class="text-light">Select an operation point for processing.</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="cyber-card p-4 text-center">
+                    <p class="text-muted mb-0">No active restaurants found in the directory.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var restaurant in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="cyber-card p-4 h-100 d-flex flex-column">
+                        <h4 class="text-neon fw-bold mb-2">@restaurant.Name</h4>
+                        
+                        @if (!string.IsNullOrEmpty(restaurant.Description))
+                        {
+                            <p class="text-light small mb-3 flex-grow-1" style="opacity: 0.8;">
+                                @restaurant.Description
+                            </p>
+                        }
+
+                        <ul class="list-unstyled text-white-50 small mb-4">
+                            @if (!string.IsNullOrEmpty(restaurant.ContactPhone))
+                            {
+                                <li class="mb-1"><i class="bi bi-telephone-fill text-neon me-2"></i>@restaurant.ContactPhone</li>
+                            }
+                            @if (restaurant.EstimatedPrepTimeMinutes.HasValue)
+                            {
+                                <li><i class="bi bi-clock-history text-neon me-2"></i>~@restaurant.EstimatedPrepTimeMinutes min. prep</li>
+                            }
+                        </ul>
+
+                        <div class="mt-auto">
+                            <button class="btn cyber-btn w-100 py-2">Access Menu</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
