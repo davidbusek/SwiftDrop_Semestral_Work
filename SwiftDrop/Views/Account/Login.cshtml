@@ -1,0 +1,41 @@
+﻿@model SwiftDrop.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "System Access";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="cyber-card p-5">
+                <h2 class="text-neon text-center mb-3 text-uppercase fw-bold">Login Terminal</h2>
+
+                <p class="text-white text-center mb-4" style="opacity: 0.9;">
+                    Secure connection established. Please verify your identity.
+                </p>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold"></div>
+
+                <form asp-action="Login" method="post">
+                    <div class="mb-4">
+                        <label asp-for="Email" class="text-neon fw-bold">E-mail Address</label>
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com">
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="text-neon fw-bold">Password</label>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••">
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn cyber-btn w-100 py-2 fs-5">Initialize Session</button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <p class="text-white">No active identity? <a asp-action="Register" class="text-neon text-decoration-none fw-bold">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

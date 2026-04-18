@@ -1,0 +1,134 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* --- SWIFTDROP CYBER THEME --- */
+body {
+    background-color: #0b0f19;
+    color: #e0e6ed;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.cyber-card {
+    background: rgba(20, 25, 40, 0.7);
+    border: 1px solid #1f2940;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+    .cyber-card:hover {
+        border-color: #00f0ff;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        transform: translateY(-5px);
+    }
+
+
+.cyber-btn {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid #00f0ff;
+    color: #00f0ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+    .cyber-btn:hover {
+        background: #00f0ff;
+        color: #0b0f19;
+        box-shadow: 0 0 15px #00f0ff;
+    }
+
+.cyber-btn-success {
+    border-color: #39ff14;
+    color: #39ff14;
+}
+
+    .cyber-btn-success:hover {
+        background: #39ff14;
+        color: #0b0f19;
+        box-shadow: 0 0 15px #39ff14;
+    }
+
+
+.text-neon {
+    color: #00f0ff;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.glass-panel {
+    background: rgba(16, 20, 30, 0.8);
+    border-radius: 12px;
+    border: 1px solid #2a3441;
+}
+
+
+main {
+    background: transparent !important;
+}
+
+
+.form-control {
+    background-color: rgba(20, 25, 40, 0.8) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+}
+
+    .form-control:focus {
+        background-color: rgba(30, 35, 55, 1) !important;
+        color: #ffffff !important;
+        border-color: #00f0ff !important;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.5) !important;
+        outline: none;
+    }
+
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+.cyber-card label {
+    color: #00f0ff !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    display: block;
+}

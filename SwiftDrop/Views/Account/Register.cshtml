@@ -1,0 +1,63 @@
+﻿@model SwiftDrop.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "New Identity";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="cyber-card p-5">
+                <h2 class="text-neon text-center mb-3 text-uppercase fw-bold">User Initialization</h2>
+
+                <p class="text-white text-center mb-4" style="opacity: 0.9;">
+                    Create a new digital identity to access multi-restaurant delivery.
+                </p>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3 fw-bold" style="text-shadow: 0 0 5px rgba(255,0,0,0.5);"></div>
+
+                <form asp-action="Register" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FirstName" class="text-neon fw-bold">First Name</label>
+                            <input asp-for="FirstName" class="form-control" placeholder="John">
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="LastName" class="text-neon fw-bold">Last Name</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Doe">
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="text-neon fw-bold">E-mail Address</label>
+                        <input asp-for="Email" class="form-control" placeholder="nexus@swiftdrop.com">
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="text-neon fw-bold">Security Key (Password)</label>
+                        <input asp-for="Password" class="form-control" placeholder="••••••••">
+                        <small class="text-white-50">Minimum 6 characters required.</small>
+                        <span asp-validation-for="Password" class="text-danger small d-block"></span>
+                    </div>
+
+                    <button type="submit" class="btn cyber-btn cyber-btn-success w-100 py-2 fs-5">
+                        <i class="bi bi-person-plus-fill me-2"></i>Create Identity
+                    </button>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <p class="text-white">Already registered? <a asp-action="Login" class="text-neon text-decoration-none fw-bold">Return to Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
