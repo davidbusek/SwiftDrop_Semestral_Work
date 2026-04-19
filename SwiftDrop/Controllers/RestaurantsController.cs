@@ -6,17 +6,28 @@ namespace SwiftDrop.Controllers
 {
     public class RestaurantsController : Controller
     {
-        private readonly IRestaurantService _service;
+        private readonly IRestaurantService _restaurantService;
 
-        public RestaurantsController(IRestaurantService service)
+        public RestaurantsController(IRestaurantService restaurantService)
         {
-            _service = service;
+            _restaurantService = restaurantService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var data = await _service.GetAllAsync();
+            var data = await _restaurantService.GetAllAsync();
             return View(data);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var restaurant = await _restaurantService.GetByIdAsync(id);
+            if (restaurant == null) return NotFound();
+
+            var categories = await _restaurantService.GetCategoriesWithMenuItemsAsync(id);
+
+            ViewBag.Categories = categories;
+            return View(restaurant);
         }
 
         public IActionResult Create() => View();
@@ -27,7 +38,7 @@ namespace SwiftDrop.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _service.CreateAsync(restaurant);
+                await _restaurantService.CreateAsync(restaurant);
                 return RedirectToAction(nameof(Index));
             }
             return View(restaurant);

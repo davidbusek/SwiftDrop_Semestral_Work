@@ -6,6 +6,7 @@ namespace SwiftDrop.Services
     {
         Task<IEnumerable<Restaurant>> GetAllAsync();
         Task<Restaurant?> GetByIdAsync(int id);
+        Task<IEnumerable<Category>> GetCategoriesWithMenuItemsAsync(int restaurantId);
         Task CreateAsync(Restaurant restaurant);
         Task UpdateAsync(Restaurant restaurant);
         Task DeleteAsync(int id);

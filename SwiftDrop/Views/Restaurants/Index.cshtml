@@ -48,7 +48,9 @@
                         </ul>
 
                         <div class="mt-auto">
-                            <button class="btn cyber-btn w-100 py-2">Access Menu</button>
+                            <a asp-controller="Restaurants" asp-action="Details" asp-route-id="@restaurant.Id" class="btn cyber-btn w-100 py-2 text-decoration-none">
+                                <i class="bi bi-terminal me-2"></i>Access Menu
+                            </a>
                         </div>
                     </div>
                 </div>
