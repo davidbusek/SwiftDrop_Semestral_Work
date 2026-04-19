@@ -16,6 +16,14 @@ namespace SwiftDrop.Services
 
         public async Task<Restaurant?> GetByIdAsync(int id) => await _context.Restaurants.FindAsync(id);
 
+        public async Task<IEnumerable<Category>> GetCategoriesWithMenuItemsAsync(int restaurantId)
+        {
+            return await _context.Categories
+                .Where(c => c.RestaurantId == restaurantId)
+                .Include(c => c.Menuitems)
+                .ToListAsync();
+        }
+
         public async Task CreateAsync(Restaurant restaurant)
         {
             _context.Add(restaurant);

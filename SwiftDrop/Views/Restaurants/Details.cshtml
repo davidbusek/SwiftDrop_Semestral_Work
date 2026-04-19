@@ -1,0 +1,58 @@
+﻿@model SwiftDrop.Models.Restaurant
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var categories = ViewBag.Categories as IEnumerable<SwiftDrop.Models.Category>;
+}
+
+<div class="container my-5">
+    <div class="cyber-card p-4 mb-5 border-neon">
+        <h1 class="text-neon text-uppercase fw-bold">@Model.Name</h1>
+        <p class="text-white opacity-75">@Model.Description</p>
+    </div>
+
+    @if (categories != null && categories.Any())
+    {
+        @foreach (var category in categories)
+        {
+            <h3 class="text-neon border-bottom border-secondary pb-2 mb-4 text-uppercase">
+                <i class="bi bi-tag-fill me-2"></i>@category.Name
+            </h3>
+
+            <div class="row g-4 mb-5">
+                @foreach (var item in category.Menuitems)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="cyber-card h-100 p-3 d-flex flex-column">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="text-white fw-bold">@item.Name</h5>
+                                <span class="text-neon fw-bold">@item.Price.ToString("C0")</span>
+                            </div>
+
+                            <p class="text-light small opacity-75 flex-grow-1">@item.Description</p>
+
+                            @if (!string.IsNullOrEmpty(item.Allergens))
+                            {
+                                <div class="mb-3">
+                                    <span class="badge bg-dark text-warning border border-warning small">
+                                        Allergens: @item.Allergens
+                                    </span>
+                                </div>
+                            }
+
+                            <button class="btn cyber-btn btn-sm w-100 mt-auto text-uppercase">
+                                <i class="bi bi-plus-lg me-1"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info bg-dark text-neon border-neon">
+            This terminal shows no available rations for this restaurant.
+        </div>
+    }
+</div>
