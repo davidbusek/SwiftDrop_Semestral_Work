@@ -24,10 +24,11 @@ namespace SwiftDrop
             // Custom Services Registration
             builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 
-            // Cart and Delivery Services
+            // Cart, Order and Delivery Services
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IDeliveryCostStrategy, SwiftDropDeliveryStrategy>();
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             // Authentication (Cookie-based)
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

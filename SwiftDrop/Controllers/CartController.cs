@@ -75,6 +75,45 @@ namespace SwiftDrop.Controllers
         }
 
         [HttpPost]
+        public async System.Threading.Tasks.Task<IActionResult> Checkout([FromServices] IOrderService orderService)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var cart = _cartService.GetCart();
+            if (!cart.Any()) return RedirectToAction("Index");
+
+            var deliveryFee = _cartService.GetTotalDeliveryPrice();
+
+            // Vytvo?ení objednávky
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                return RedirectToAction("Index");
+            }
+
+            var order = await orderService.ProcessCheckoutAsync(userEmail, cart, deliveryFee);
+
+            // Mock Platba
+            bool isSuccess = await orderService.MockPaymentProcessAsync(order.Id, order.TotalPrice);
+
+            _cartService.ClearCart();
+
+            if (isSuccess)
+            {
+                TempData["SuccessMessage"] = $"Payment successful! Order #{order.Id} confirmed and is now pending.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = $"Payment link failed for Order #{order.Id}. Transaction denied.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public IActionResult Clear()
         {
             _cartService.ClearCart();
