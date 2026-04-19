@@ -40,7 +40,7 @@
                                 </div>
                             }
 
-                            <button class="btn cyber-btn btn-sm w-100 mt-auto text-uppercase">
+                            <button class="btn cyber-btn btn-sm w-100 mt-auto text-uppercase" onclick="addToCart(@item.Id, @Model.Id, '@item.Name.Replace("'", "\\'")', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture), '@(item.ImageUrl ?? "")')">
                                 <i class="bi bi-plus-lg me-1"></i> Add to Cart
                             </button>
                         </div>
@@ -56,3 +56,43 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function addToCart(menuItemId, restaurantId, name, price, imageUrl) {
+            const item = {
+                menuItemId: menuItemId,
+                restaurantId: restaurantId,
+                name: name,
+                price: price,
+                quantity: 1,
+                imageUrl: imageUrl || ''
+            };
+
+            fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(item)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                // Update nav bar cart info
+                document.getElementById('cart-count').innerText = data.cartCount;
+
+                // Show a quick visual notification
+                alert(name + ' added to cart!');
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add item to cart.');
+            });
+        }
+    </script>
+}

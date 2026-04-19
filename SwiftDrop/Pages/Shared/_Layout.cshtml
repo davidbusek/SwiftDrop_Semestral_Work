@@ -13,6 +13,10 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
+    @inject SwiftDrop.Services.ICartService CartService
+    @{
+        var cartCount = CartService.GetCart().Sum(c => c.Quantity);
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark glass-panel border-bottom border-secondary mb-4" style="border-radius: 0;">
             <div class="container">
@@ -33,6 +37,14 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white fw-bold text-uppercase" asp-area="" asp-page="/Privacy">How it works</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav me-3 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link text-neon text-uppercase fw-bold" href="#">
+                                <i class="bi bi-cart3"></i> Cart (<span id="cart-count">@cartCount</span>)
+                            </a>
                         </li>
                     </ul>
 
