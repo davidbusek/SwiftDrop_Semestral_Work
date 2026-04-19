@@ -79,19 +79,19 @@
                                 <ul class="dropdown-menu dropdown-menu-dark bg-dark border-secondary" aria-labelledby="userDropdown">
                                     @if (User.IsInRole("Admin"))
                                     {
-                                        <li><a class="dropdown-item text-white hover-neon" href="#">Control Panel</a></li>
+                                        <li><a class="dropdown-item text-white hover-neon" asp-controller="Admin" asp-action="Index">Control Panel</a></li>
                                         <li><a class="dropdown-item text-white hover-neon" href="#">User DB</a></li>
                                         <li><hr class="dropdown-divider border-secondary"></li>
                                     }
                                     @if (User.IsInRole("RestaurantManager"))
                                     {
-                                        <li><a class="dropdown-item text-white hover-neon" href="#">Restaurant Dashboard</a></li>
+                                        <li><a class="dropdown-item text-white hover-neon" asp-controller="Manager" asp-action="Index">Restaurant Dashboard</a></li>
                                         <li><a class="dropdown-item text-white hover-neon" href="#">Menu Control</a></li>
                                         <li><hr class="dropdown-divider border-secondary"></li>
                                     }
                                     @if (User.IsInRole("Courier"))
                                     {
-                                        <li><a class="dropdown-item text-white hover-neon" href="#">Active Deliveries</a></li>
+                                        <li><a class="dropdown-item text-white hover-neon" asp-controller="Courier" asp-action="Index">Active Deliveries</a></li>
                                         <li><hr class="dropdown-divider border-secondary"></li>
                                     }
                                     <li><a class="dropdown-item text-white hover-neon" href="#">My Orders</a></li>

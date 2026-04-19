@@ -1,0 +1,102 @@
+@model SwiftDrop.ViewModels.ManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Restaurant Management";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="text-warning mb-4 text-uppercase fw-bold"><i class="bi bi-shop me-2"></i>Manager Dashboard</h2>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="cyber-card p-4 border-warning">
+                <h5 class="text-white opacity-75">Pending Orders <i class="bi bi-exclamation-circle text-warning float-end"></i></h5>
+                <h2 class="text-neon fw-bold">@Model.PendingOrders</h2>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="cyber-card p-4 border-warning">
+                <h5 class="text-white opacity-75">Total Menu Items Listed</h5>
+                <h2 class="text-neon fw-bold">@Model.ActiveItems</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Orders Management -->
+    <h4 class="text-warning border-bottom border-warning pb-2 text-uppercase mb-3">Incoming Requisitions</h4>
+    <div class="cyber-card p-4 border-warning mb-5">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+                <thead>
+                    <tr class="border-warning text-uppercase text-warning">
+                        <th class="ps-0 border-top-0 bg-transparent text-white">Order ID</th>
+                        <th class="border-top-0 bg-transparent text-white">Customer</th>
+                        <th class="border-top-0 bg-transparent text-white">Total</th>
+                        <th class="border-top-0 bg-transparent text-white">Time</th>
+                        <th class="border-top-0 bg-transparent text-white">Status</th>
+                        <th class="border-top-0 bg-transparent text-white text-end pe-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(!Model.Orders.Any())
+                    {
+                        <tr><td colspan="6" class="text-center text-white opacity-50 py-3">No pending orders found.</td></tr>
+                    }
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr class="border-bottom border-secondary bg-transparent">
+                            <td class="ps-0 text-white">#@order.Id</td>
+                            <td class="text-white">@(order.User?.FirstName ?? "Unknown")</td>
+                            <td class="text-neon fw-bold">@order.TotalPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</td>
+                            <td class="text-light opacity-75">@order.CreatedAt?.ToString("HH:mm")</td>
+                            <td><span class="badge bg-warning text-dark text-uppercase border border-warning">@order.Status</span></td>
+                            <td class="text-end pe-0">
+                                <form method="post" asp-controller="Manager" asp-action="ApproveOrder" class="m-0 d-inline">
+                                    <input type="hidden" name="id" value="@order.Id" />
+                                    <button type="submit" class="btn btn-sm cyber-btn bg-warning text-dark text-uppercase fw-bold"><i class="bi bi-check-lg"></i> Approve</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Active Menu Items Management -->
+    <h4 class="text-warning border-bottom border-warning pb-2 text-uppercase mb-3">Menu Directory</h4>
+    <div class="cyber-card p-4 border-warning">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+                <thead>
+                    <tr class="border-warning text-uppercase text-warning">
+                        <th class="ps-0 border-top-0 bg-transparent text-white">ID</th>
+                        <th class="border-top-0 bg-transparent text-white">Name</th>
+                        <th class="border-top-0 bg-transparent text-white">Price</th>
+                        <th class="border-top-0 bg-transparent text-white text-end pe-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(!Model.MenuItems.Any())
+                    {
+                        <tr><td colspan="4" class="text-center text-white opacity-50 py-3">No menu items configured.</td></tr>
+                    }
+                    @foreach (var item in Model.MenuItems)
+                    {
+                        <tr class="border-bottom border-secondary bg-transparent">
+                            <td class="ps-0 text-white opacity-50">@item.Id</td>
+                            <td class="text-white fw-bold">@item.Name</td>
+                            <td class="text-light">@item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</td>
+                            <td class="text-end pe-0">
+                                <form method="post" asp-controller="Manager" asp-action="DeleteMenuItem" class="m-0 d-inline" onsubmit="return confirm('Remove @(item.Name.Replace("'", "")) from directory?');">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger text-uppercase"><i class="bi bi-trash"></i> Drop</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
