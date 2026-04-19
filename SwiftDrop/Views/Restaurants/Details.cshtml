@@ -40,7 +40,7 @@
                                 </div>
                             }
 
-                            <button class="btn cyber-btn btn-sm w-100 mt-auto text-uppercase" onclick="addToCart(@item.Id, @Model.Id, '@item.Name.Replace("'", "\\'")', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture), '@(item.ImageUrl ?? "")')">
+                            <button class="btn cyber-btn btn-sm w-100 mt-auto text-uppercase" onclick="openAddToCartModal(@item.Id, @Model.Id, '@item.Name.Replace("'", "\\'")', @item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture), '@(item.ImageUrl ?? "")')">
                                 <i class="bi bi-plus-lg me-1"></i> Add to Cart
                             </button>
                         </div>
@@ -57,16 +57,64 @@
     }
 </div>
 
+<!-- Add to Cart Modal -->
+<div class="modal fade" id="addToCartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-neon">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-neon" id="addToCartModalLabel">Configure Ration Specs</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="modalItemName" class="mb-3 text-uppercase"></h4>
+                <p>Base Price: <span id="modalItemPrice" class="text-neon fw-bold"></span></p>
+                <div class="mb-3">
+                    <label for="modalItemQuantity" class="form-label">Quantity</label>
+                    <input type="number" class="form-control bg-dark text-white border-secondary text-neon fw-bold" id="modalItemQuantity" value="1" min="1" max="99">
+                </div>
+                <input type="hidden" id="modalMenuItemId">
+                <input type="hidden" id="modalRestaurantId">
+                <input type="hidden" id="modalItemImageUrl">
+                <input type="hidden" id="modalItemRawPrice">
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light text-uppercase" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn cyber-btn text-uppercase" onclick="submitAddToCart()">Confirm Addition</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        function addToCart(menuItemId, restaurantId, name, price, imageUrl) {
+        function openAddToCartModal(menuItemId, restaurantId, name, price, imageUrl) {
+            document.getElementById('modalMenuItemId').value = menuItemId;
+            document.getElementById('modalRestaurantId').value = restaurantId;
+            document.getElementById('modalItemName').innerText = name;
+            document.getElementById('modalItemRawPrice').value = price;
+            document.getElementById('modalItemPrice').innerText = '$' + parseFloat(price).toFixed(2);
+            document.getElementById('modalItemImageUrl').value = imageUrl || '';
+            document.getElementById('modalItemQuantity').value = 1;
+
+            var myModal = new bootstrap.Modal(document.getElementById('addToCartModal'));
+            myModal.show();
+        }
+
+        function submitAddToCart() {
+            const menuItemId = parseInt(document.getElementById('modalMenuItemId').value);
+            const restaurantId = parseInt(document.getElementById('modalRestaurantId').value);
+            const name = document.getElementById('modalItemName').innerText;
+            const price = parseFloat(document.getElementById('modalItemRawPrice').value);
+            const quantity = parseInt(document.getElementById('modalItemQuantity').value);
+            const imageUrl = document.getElementById('modalItemImageUrl').value;
+
             const item = {
                 menuItemId: menuItemId,
                 restaurantId: restaurantId,
                 name: name,
                 price: price,
-                quantity: 1,
-                imageUrl: imageUrl || ''
+                quantity: quantity,
+                imageUrl: imageUrl
             };
 
             fetch('/api/cart/add', {
@@ -86,13 +134,44 @@
                 // Update nav bar cart info
                 document.getElementById('cart-count').innerText = data.cartCount;
 
-                // Show a quick visual notification
-                alert(name + ' added to cart!');
+                // Close modal
+                var myModalEl = document.getElementById('addToCartModal');
+                var modal = bootstrap.Modal.getInstance(myModalEl);
+                modal.hide();
+
+                // Show notification
+                showToast(name + ' added to your inventory!');
             })
             .catch(error => {
                 console.error('Error adding to cart:', error);
-                alert('Failed to add item to cart.');
+                alert('System failure: Could not add item.');
             });
+        }
+
+        function showToast(message) {
+            const toastHtml = `
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+                <div id="cartToast" class="toast align-items-center text-white bg-dark border-neon" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body text-neon fw-bold">
+                            <i class="bi bi-check-circle-fill me-2"></i> ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>`;
+
+            let toastContainer = document.getElementById('toastWrapper');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastWrapper';
+                document.body.appendChild(toastContainer);
+            }
+            toastContainer.innerHTML = toastHtml;
+
+            var toastEl = document.getElementById('cartToast');
+            var toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 3000 });
+            toast.show();
         }
     </script>
 }

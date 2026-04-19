@@ -1,0 +1,93 @@
+@model SwiftDrop.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Your Inventory";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="text-neon mb-4 text-uppercase fw-bold"><i class="bi bi-cart3 me-2"></i>Your Inventory</h2>
+
+    @if (!Model.CartItems.Any())
+    {
+        <div class="alert alert-info bg-dark text-white border-neon">
+            Your cart is currently empty. Visit the <a asp-controller="Restaurants" asp-action="Index" class="text-neon fw-bold text-decoration-none">Restaurants</a> to obtain rations.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cyber-card p-4 border-neon mb-4">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="border-secondary text-uppercase text-light">
+                                    <th>Item</th>
+                                    <th>Specs</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr class="border-secondary">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" alt="@item.Name" class="me-3 border border-secondary" style="width: 50px; height: 50px; object-fit: cover;" />
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-secondary me-3 d-flex align-items-center justify-content-center border border-secondary" style="width: 50px; height: 50px;">
+                                                        <i class="bi bi-box text-dark"></i>
+                                                    </div>
+                                                }
+                                                <span class="text-white fw-bold">@item.Name</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-light opacity-75">
+                                            @item.Price.ToString("C2", System.Globalization.CultureInfo.InvariantCulture) / unit
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-dark border border-neon text-neon fs-6">@item.Quantity</span>
+                                        </td>
+                                        <td class="text-end text-neon fw-bold">
+                                            @((item.Price * item.Quantity).ToString("C2", System.Globalization.CultureInfo.InvariantCulture))
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cyber-card p-4 border-neon sticky-top" style="top: 20px;">
+                    <h4 class="text-neon mb-3 text-uppercase border-bottom border-secondary pb-2">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-light">Subtotal</span>
+                        <span class="text-white">@Model.Subtotal.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom border-secondary pb-3">
+                        <span class="text-light">Swift Delivery</span>
+                        <span class="text-white">@Model.DeliveryFee.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 mt-2">
+                        <span class="text-neon fw-bold fs-5 text-uppercase">Total</span>
+                        <span class="text-neon fw-bold fs-5">@Model.Total.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                    </div>
+                    <button class="btn cyber-btn w-100 mt-2 text-uppercase mb-3">
+                        <i class="bi bi-check2-circle me-1"></i> Proceed to Checkout
+                    </button>
+                    <form method="post" asp-controller="Cart" asp-action="Clear" class="text-center">
+                        <button type="submit" class="btn btn-outline-danger btn-sm text-uppercase w-100" style="border-radius: 0;">
+                            <i class="bi bi-trash3 me-1"></i> Clear Inventory
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

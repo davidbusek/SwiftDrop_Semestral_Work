@@ -3,12 +3,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SwiftDrop.Models;
 using SwiftDrop.Services;
+using SwiftDrop.ViewModels;
 
 namespace SwiftDrop.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CartController : ControllerBase
+    public class CartController : Controller
     {
         private readonly ICartService _cartService;
 
@@ -17,7 +16,25 @@ namespace SwiftDrop.Controllers
             _cartService = cartService;
         }
 
-        [HttpPost("add")]
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var cartItems = _cartService.GetCart();
+            var deliveryFee = _cartService.GetTotalDeliveryPrice();
+            var subtotal = cartItems.Sum(i => i.Price * i.Quantity);
+
+            var viewModel = new CartViewModel
+            {
+                CartItems = cartItems,
+                DeliveryFee = deliveryFee,
+                Subtotal = subtotal,
+                Total = subtotal + deliveryFee
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost("api/cart/add")]
         public IActionResult Add([FromBody] CartItem item)
         {
             if (item == null)
@@ -41,6 +58,13 @@ namespace SwiftDrop.Controllers
                 cartCount = totalCount,
                 deliveryFee = deliveryFee
             });
+        }
+
+        [HttpPost]
+        public IActionResult Clear()
+        {
+            _cartService.ClearCart();
+            return RedirectToAction("Index");
         }
     }
 }
