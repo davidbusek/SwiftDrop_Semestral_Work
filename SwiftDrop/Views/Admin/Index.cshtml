@@ -1,0 +1,67 @@
+@model SwiftDrop.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "System Administration";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2 class="text-danger mb-4 text-uppercase fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Admin Override</h2>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="cyber-card p-4 border-danger">
+                <h5 class="text-white opacity-75">Total Users</h5>
+                <h2 class="text-neon fw-bold">@Model.TotalUsers</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="cyber-card p-4 border-danger">
+                <h5 class="text-white opacity-75">Active Nodes</h5>
+                <h2 class="text-neon fw-bold">@Model.ActiveRestaurants</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="cyber-card p-4 border-danger">
+                <h5 class="text-white opacity-75">Daily Creds</h5>
+                <h2 class="text-neon fw-bold">@Model.DailyRevenue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</h2>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="text-danger border-bottom border-danger pb-2 text-uppercase mb-3">User Database</h4>
+    <div class="cyber-card p-4 border-danger">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+                <thead>
+                    <tr class="border-danger text-uppercase text-danger">
+                        <th class="ps-0 border-top-0 bg-transparent text-white">ID</th>
+                        <th class="border-top-0 bg-transparent text-white">Name</th>
+                        <th class="border-top-0 bg-transparent text-white">Email</th>
+                        <th class="border-top-0 bg-transparent text-white">Role</th>
+                        <th class="border-top-0 bg-transparent text-white text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr class="border-bottom border-secondary bg-transparent">
+                            <td class="ps-0 text-white">@user.Id</td>
+                            <td class="text-white">@user.FirstName @user.LastName</td>
+                            <td class="text-white opacity-75">@user.Email</td>
+                            <td class="text-neon">@user.Role</td>
+                            <td class="text-end pe-0">
+                                @if (user.Role != "Admin")
+                                {
+                                    <form method="post" asp-controller="Admin" asp-action="DeleteUser" class="m-0 d-inline" onsubmit="return confirm('Are you sure you want to terminate this user?');">
+                                        <input type="hidden" name="id" value="@user.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger text-uppercase">Terminate</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
