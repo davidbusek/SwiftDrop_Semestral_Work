@@ -53,13 +53,50 @@
                         {
                             <li class="nav-item me-4">
                                 <span class="text-light text-uppercase small">
-                                    Status: <span class="text-success fw-bold"><i class="bi bi-shield-check"></i> Verified</span>
+                                    Status: 
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <span class="text-danger fw-bold"><i class="bi bi-shield-lock-fill"></i> System Admin</span>
+                                    }
+                                    else if (User.IsInRole("RestaurantManager"))
+                                    {
+                                        <span class="text-warning fw-bold"><i class="bi bi-shop"></i> Manager</span>
+                                    }
+                                    else if (User.IsInRole("Courier"))
+                                    {
+                                        <span class="text-info fw-bold"><i class="bi bi-bicycle"></i> Courier</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-bold"><i class="bi bi-shield-check"></i> Verified</span>
+                                    }
                                 </span>
                             </li>
-                            <li class="nav-item me-3">
-                                <span class="text-neon fw-bold fs-5">
+                            <li class="nav-item me-3 dropdown">
+                                <a class="nav-link dropdown-toggle text-neon fw-bold fs-5" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-person-bounding-box"></i> @User.Identity.Name
-                                </span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark bg-dark border-secondary" aria-labelledby="userDropdown">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item text-white hover-neon" href="#">Control Panel</a></li>
+                                        <li><a class="dropdown-item text-white hover-neon" href="#">User DB</a></li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                    }
+                                    @if (User.IsInRole("RestaurantManager"))
+                                    {
+                                        <li><a class="dropdown-item text-white hover-neon" href="#">Restaurant Dashboard</a></li>
+                                        <li><a class="dropdown-item text-white hover-neon" href="#">Menu Control</a></li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                    }
+                                    @if (User.IsInRole("Courier"))
+                                    {
+                                        <li><a class="dropdown-item text-white hover-neon" href="#">Active Deliveries</a></li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                    }
+                                    <li><a class="dropdown-item text-white hover-neon" href="#">My Orders</a></li>
+                                    <li><a class="dropdown-item text-white hover-neon" href="#">Settings</a></li>
+                                </ul>
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-outline-danger btn-sm fw-bold text-uppercase" asp-controller="Account" asp-action="Logout" style="border-radius: 0;">

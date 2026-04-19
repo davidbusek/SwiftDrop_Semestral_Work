@@ -66,6 +66,41 @@ namespace SwiftDrop.Services
             session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
         }
 
+        public void UpdateQuantity(int menuItemId, int quantity)
+        {
+            var session = Session;
+            if (session == null) return;
+
+            var cart = GetCart();
+            var item = cart.FirstOrDefault(i => i.MenuItemId == menuItemId);
+            if (item != null)
+            {
+                if (quantity > 0)
+                {
+                    item.Quantity = quantity;
+                }
+                else
+                {
+                    cart.Remove(item);
+                }
+                session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
+            }
+        }
+
+        public void RemoveItem(int menuItemId)
+        {
+            var session = Session;
+            if (session == null) return;
+
+            var cart = GetCart();
+            var item = cart.FirstOrDefault(i => i.MenuItemId == menuItemId);
+            if (item != null)
+            {
+                cart.Remove(item);
+                session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
+            }
+        }
+
         public decimal GetTotalDeliveryPrice()
         {
             var cart = GetCart();

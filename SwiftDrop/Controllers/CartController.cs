@@ -61,6 +61,20 @@ namespace SwiftDrop.Controllers
         }
 
         [HttpPost]
+        public IActionResult UpdateQuantity(int menuItemId, int quantity)
+        {
+            _cartService.UpdateQuantity(menuItemId, quantity);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Remove(int menuItemId)
+        {
+            _cartService.RemoveItem(menuItemId);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public IActionResult Clear()
         {
             _cartService.ClearCart();

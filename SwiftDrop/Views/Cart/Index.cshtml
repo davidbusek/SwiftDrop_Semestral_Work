@@ -4,6 +4,20 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+@section Styles {
+    <style>
+        /* Remove number input spin buttons */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+    </style>
+}
+
 <div class="container my-5">
     <h2 class="text-neon mb-4 text-uppercase fw-bold"><i class="bi bi-cart3 me-2"></i>Your Inventory</h2>
 
@@ -19,20 +33,20 @@
             <div class="col-lg-8">
                 <div class="cyber-card p-4 border-neon mb-4">
                     <div class="table-responsive">
-                        <table class="table table-dark table-hover align-middle mb-0">
+                        <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-hover-bg: rgba(255,255,255,0.05);">
                             <thead>
-                                <tr class="border-secondary text-uppercase text-light">
-                                    <th>Item</th>
-                                    <th>Specs</th>
-                                    <th class="text-center">Quantity</th>
-                                    <th class="text-end">Total</th>
+                                <tr class="border-bottom border-secondary text-uppercase text-neon">
+                                    <th class="ps-0 border-top-0 bg-transparent text-white">Item</th>
+                                    <th class="border-top-0 bg-transparent text-white">Specs</th>
+                                    <th class="text-center border-top-0 bg-transparent text-white">Quantity</th>
+                                    <th class="text-end pe-0 border-top-0 bg-transparent text-white">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var item in Model.CartItems)
                                 {
-                                    <tr class="border-secondary">
-                                        <td>
+                                    <tr class="border-bottom border-secondary bg-transparent">
+                                        <td class="ps-0 bg-transparent">
                                             <div class="d-flex align-items-center">
                                                 @if (!string.IsNullOrEmpty(item.ImageUrl))
                                                 {
@@ -40,21 +54,38 @@
                                                 }
                                                 else
                                                 {
-                                                    <div class="bg-secondary me-3 d-flex align-items-center justify-content-center border border-secondary" style="width: 50px; height: 50px;">
-                                                        <i class="bi bi-box text-dark"></i>
+                                                    <div class="bg-transparent me-3 d-flex align-items-center justify-content-center border border-secondary" style="width: 50px; height: 50px;">
+                                                        <i class="bi bi-box text-white opacity-50"></i>
                                                     </div>
                                                 }
                                                 <span class="text-white fw-bold">@item.Name</span>
                                             </div>
                                         </td>
-                                        <td class="text-light opacity-75">
-                                            @item.Price.ToString("C2", System.Globalization.CultureInfo.InvariantCulture) / unit
+                                        <td class="text-light opacity-75 bg-transparent">
+                                            @item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč / unit
                                         </td>
-                                        <td class="text-center">
-                                            <span class="badge bg-dark border border-neon text-neon fs-6">@item.Quantity</span>
+                                        <td class="text-center bg-transparent">
+                                            <form method="post" asp-controller="Cart" asp-action="UpdateQuantity" class="d-flex justify-content-center align-items-center m-0">
+                                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                                <div class="input-group input-group-sm" style="max-width: 120px;">
+                                                    <button type="button" class="btn btn-outline-secondary text-white border-secondary" style="border-radius: 0;" onclick="this.parentNode.querySelector('input[type=number]').stepDown(); this.parentNode.parentNode.submit();">
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" name="quantity" class="form-control bg-transparent text-white text-center border-secondary text-neon fw-bold" value="@item.Quantity" min="1" max="99" onchange="this.form.submit()" style="border-radius: 0;" />
+                                                    <button type="button" class="btn btn-outline-secondary text-white border-secondary" style="border-radius: 0;" onclick="this.parentNode.querySelector('input[type=number]').stepUp(); this.parentNode.parentNode.submit();">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </td>
-                                        <td class="text-end text-neon fw-bold">
-                                            @((item.Price * item.Quantity).ToString("C2", System.Globalization.CultureInfo.InvariantCulture))
+                                        <td class="text-end text-neon fw-bold pe-0 bg-transparent">
+                                            @((item.Price * item.Quantity).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)) Kč
+                                            <form method="post" asp-controller="Cart" asp-action="Remove" class="d-inline ms-3 m-0">
+                                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                                <button type="submit" class="btn btn-link text-danger p-0" title="Remove item">
+                                                    <i class="bi bi-x-square-fill fs-5"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 }
@@ -68,15 +99,15 @@
                     <h4 class="text-neon mb-3 text-uppercase border-bottom border-secondary pb-2">Order Summary</h4>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-light">Subtotal</span>
-                        <span class="text-white">@Model.Subtotal.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                        <span class="text-white">@Model.Subtotal.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 border-bottom border-secondary pb-3">
                         <span class="text-light">Swift Delivery</span>
-                        <span class="text-white">@Model.DeliveryFee.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                        <span class="text-white">@Model.DeliveryFee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</span>
                     </div>
                     <div class="d-flex justify-content-between mb-4 mt-2">
                         <span class="text-neon fw-bold fs-5 text-uppercase">Total</span>
-                        <span class="text-neon fw-bold fs-5">@Model.Total.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                        <span class="text-neon fw-bold fs-5">@Model.Total.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</span>
                     </div>
                     <button class="btn cyber-btn w-100 mt-2 text-uppercase mb-3">
                         <i class="bi bi-check2-circle me-1"></i> Proceed to Checkout
