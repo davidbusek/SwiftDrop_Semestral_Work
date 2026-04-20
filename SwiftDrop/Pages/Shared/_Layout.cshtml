@@ -40,13 +40,16 @@
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav me-3 align-items-center">
-                        <li class="nav-item">
-                            <a class="nav-link text-neon text-uppercase fw-bold" asp-area="" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart3"></i> Cart (<span id="cart-count">@cartCount</span>)
-                            </a>
-                        </li>
-                    </ul>
+                    @if (!User.IsInRole("RestaurantManager") && !User.IsInRole("Courier"))
+                    {
+                        <ul class="navbar-nav me-3 align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link text-neon text-uppercase fw-bold" asp-area="" asp-controller="Cart" asp-action="Index">
+                                    <i class="bi bi-cart3"></i> Cart (<span id="cart-count">@cartCount</span>)
+                                </a>
+                            </li>
+                        </ul>
+                    }
 
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -94,7 +97,10 @@
                                         <li><a class="dropdown-item text-white hover-neon" asp-controller="Courier" asp-action="Index">Active Deliveries</a></li>
                                         <li><hr class="dropdown-divider border-secondary"></li>
                                     }
-                                    <li><a class="dropdown-item text-white hover-neon" href="#">My Orders</a></li>
+                                    @if (!User.IsInRole("RestaurantManager") && !User.IsInRole("Courier"))
+                                    {
+                                        <li><a class="dropdown-item text-white hover-neon" asp-controller="Orders" asp-action="Index">My Orders</a></li>
+                                    }
                                     <li><a class="dropdown-item text-white hover-neon" href="#">Settings</a></li>
                                 </ul>
                             </li>
