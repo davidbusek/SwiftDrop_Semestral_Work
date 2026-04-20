@@ -55,7 +55,7 @@ namespace SwiftDrop.Services
             {
                 UserId = user.Id,
                 AddressId = addressId,
-                Status = "Payment Pending",
+                Status = "Pending",
                 ItemPrice = itemPrice,
                 DeliveryFee = deliveryFee,
                 TotalPrice = totalPrice,
@@ -115,7 +115,7 @@ namespace SwiftDrop.Services
             var order = await _context.Orders.FindAsync(orderId);
             if (order != null)
             {
-                order.Status = paymentSuccess ? "Pending" : "Payment Failed";
+                order.Status = paymentSuccess ? "Paid" : "Canceled";
             }
 
             await _context.SaveChangesAsync();

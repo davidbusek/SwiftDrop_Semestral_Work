@@ -49,11 +49,18 @@
                             <td class="text-white">@(order.User?.FirstName ?? "Unknown")</td>
                             <td class="text-neon fw-bold">@order.TotalPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</td>
                             <td class="text-light opacity-75">@order.CreatedAt?.ToString("HH:mm")</td>
-                            <td><span class="badge bg-warning text-dark text-uppercase border border-warning">@order.Status</span></td>
+                            <td><span class="badge bg-warning text-dark text-uppercase border border-warning">@order.Status?.Replace("PickupsInProgress", "Pickup In Progress").Replace("CourierAssigned", "Courier Assigned")</span></td>
                             <td class="text-end pe-0">
-                                <form method="post" asp-controller="Manager" asp-action="ApproveOrder" class="m-0 d-inline">
+                                <form method="post" asp-controller="Manager" asp-action="AdvanceOrderState" class="m-0 d-inline">
                                     <input type="hidden" name="id" value="@order.Id" />
-                                    <button type="submit" class="btn btn-sm cyber-btn bg-warning text-dark text-uppercase fw-bold"><i class="bi bi-check-lg"></i> Approve</button>
+                                    @if(order.Status == "Pending" || order.Status == "Paid")
+                                    {
+                                        <button type="submit" class="btn btn-sm cyber-btn bg-warning text-dark text-uppercase fw-bold"><i class="bi bi-fire"></i> Start Prep</button>
+                                    }
+                                    else if(order.Status == "PickupsInProgress")
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-success text-uppercase fw-bold"><i class="bi bi-box-seam"></i> Ready for Courier</button>
+                                    }
                                 </form>
                             </td>
                         </tr>

@@ -35,11 +35,14 @@
                                 <td class="text-neon fw-bold">@order.TotalPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</td>
                                 <td class="text-end pe-0">
                                     @{
-                                        var statusStr = string.IsNullOrWhiteSpace(order.Status) ? "DELIVERED" : order.Status;
-                                        var badgeColor = statusStr.Contains("Pending") || statusStr.Contains("Payment") ? "text-warning border-warning" : "text-success border-success";
+                                        var rawStatus = string.IsNullOrWhiteSpace(order.Status) ? "Delivered" : order.Status;
+                                        var displayStatus = rawStatus.Replace("PickupsInProgress", "Pickup In Progress").Replace("CourierAssigned", "Courier Assigned");
+                                        var badgeColor = rawStatus == "Delivered" ? "text-success border-success" : 
+                                                         rawStatus == "Canceled" ? "text-danger border-danger" : 
+                                                         "text-warning border-warning";
                                     }
                                     <span class="badge bg-dark border @badgeColor text-uppercase">
-                                        @statusStr
+                                        @displayStatus
                                     </span>
                                 </td>
                             </tr>
