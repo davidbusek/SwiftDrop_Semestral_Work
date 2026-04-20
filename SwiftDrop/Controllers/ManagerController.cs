@@ -21,7 +21,7 @@ namespace SwiftDrop.Controllers
         public async Task<IActionResult> Index()
         {
             var pendingOrdersList = await _context.Orders
-                .Where(o => o.Status == "Pending")
+                .Where(o => o.Status == "Pending" || o.Status == "Paid" || o.Status == "PickupsInProgress")
                 .Include(o => o.User)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
@@ -41,12 +41,19 @@ namespace SwiftDrop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ApproveOrder(int id)
+        public async Task<IActionResult> AdvanceOrderState(int id)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order != null)
             {
-                order.Status = "Preparing"; // State pattern transition point demo
+                if (order.Status == "Pending" || order.Status == "Paid")
+                {
+                    order.Status = "PickupsInProgress";
+                }
+                else if (order.Status == "PickupsInProgress")
+                {
+                    order.Status = "CourierAssigned";
+                }
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
