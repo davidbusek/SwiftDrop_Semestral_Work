@@ -12,6 +12,7 @@ namespace SwiftDrop.Services
     {
         Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee);
         Task<bool> MockPaymentProcessAsync(int orderId, decimal amount);
+        Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail);
     }
 
     public class OrderService : IOrderService
@@ -21,6 +22,17 @@ namespace SwiftDrop.Services
         public OrderService(SwiftDropDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null) return new List<Order>();
+
+            return await _context.Orders
+                .Where(o => o.UserId == user.Id)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee)
