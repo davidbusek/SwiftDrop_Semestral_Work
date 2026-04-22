@@ -4,6 +4,20 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #courierMap {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--bs-info);
+            margin-bottom: 2rem;
+            z-index: 1; /* Keeping it from overlapping modals/dropdowns */
+        }
+    </style>
+}
+
 <div class="container my-5">
     <h2 class="text-info mb-4 text-uppercase fw-bold"><i class="bi bi-bicycle me-2"></i>Courier Grid</h2>
 
@@ -22,6 +36,12 @@
         </div>
     </div>
 
+    <!-- Live Routing Map -->
+    <h4 class="text-info border-bottom border-info pb-2 text-uppercase mb-3">Live Navigation System (OSM/Leaflet)</h4>
+    <div class="cyber-card p-4 border-info mb-5">
+        <div id="courierMap"></div>
+    </div>
+
     <!-- Active Delivery Jobs Management -->
     <h4 class="text-info border-bottom border-info pb-2 text-uppercase mb-3">Available Parcels</h4>
     <div class="cyber-card p-4 border-info">
@@ -34,13 +54,14 @@
                         <th class="border-top-0 bg-transparent text-white">Order Time</th>
                         <th class="border-top-0 bg-transparent text-white">Payout</th>
                         <th class="border-top-0 bg-transparent text-white">Status</th>
+                        <th class="border-top-0 bg-transparent text-white text-center">Route</th>
                         <th class="border-top-0 bg-transparent text-white text-end pe-0">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if(!Model.AvailableOrders.Any())
                     {
-                        <tr><td colspan="5" class="text-center text-white opacity-50 py-3">No active parcels to deliver.</td></tr>
+                        <tr><td colspan="7" class="text-center text-white opacity-50 py-3">No active parcels to deliver.</td></tr>
                     }
                     @foreach (var order in Model.AvailableOrders)
                     {
@@ -81,6 +102,11 @@
                                 }
                                 <span class="badge bg-info text-dark text-uppercase border border-info">@displayStatus</span>
                             </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm cyber-btn bg-info text-dark text-uppercase fw-bold view-map-btn" data-order-id="@order.Id">
+                                    <i class="bi bi-geo-alt"></i> Show Route
+                                </button>
+                            </td>
                             <td class="text-end pe-0">
                                 <form method="post" asp-controller="Courier" asp-action="UpdateDeliveryState" class="m-0 d-inline">
                                     <input type="hidden" name="id" value="@order.Id" />
@@ -101,3 +127,68 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // We use exact property names as output by JsonSerializer without modifying naming policy, so 'OrderId' works.
+            var rawMarkersData = '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MapMarkers ?? new List<SwiftDrop.ViewModels.MapMarkerDto>()))';
+            var allMarkers = JSON.parse(rawMarkersData);
+
+            // Set initial map view to Prague
+            var map = L.map('courierMap').setView([50.08, 14.43], 12);
+
+            // Load map tiles from OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                className: 'map-tiles-cyber'
+            }).addTo(map);
+
+            var currentLayerGroup = L.layerGroup().addTo(map);
+
+            function showOrderOnMap(orderId) {
+                currentLayerGroup.clearLayers();
+                var bounds = [];
+                // Filtering based on exact property casing from C# ViewModels
+                var orderMarkers = allMarkers.filter(function(m) { return m.OrderId === orderId; });
+
+                // Iterate over markers and render them
+                orderMarkers.forEach(function(m) {
+                    var isPickup = m.Type === 'Pickup';
+                    // Different colors for pickup and delivery
+                    var markerColor = isPickup ? '#ffc107' : '#DC3545'; // Yellow/Neon for Pickup, Red for Dropoff
+                    var radiusSize = isPickup ? 10 : 8;
+
+                    var circleMarker = L.circleMarker([m.Lat, m.Lng], {
+                        color: markerColor,
+                        fillColor: markerColor,
+                        fillOpacity: 0.8,
+                        radius: radiusSize
+                    });
+
+                    circleMarker.bindPopup('<strong style="color: black;">' + m.Title + '</strong><br>' + m.Type);
+                    currentLayerGroup.addLayer(circleMarker);
+                    bounds.push([m.Lat, m.Lng]);
+                });
+
+                // Zoom to fit all bounds if they exist
+                if(bounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                    document.getElementById('courierMap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    alert('No GPS coordinates found for this order.');
+                }
+            }
+
+            // Click listener for all "Show Route" buttons
+            var mapButtons = document.querySelectorAll('.view-map-btn');
+            mapButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var oId = parseInt(this.getAttribute('data-order-id'));
+                    showOrderOnMap(oId);
+                });
+            });
+        });
+    </script>
+}
