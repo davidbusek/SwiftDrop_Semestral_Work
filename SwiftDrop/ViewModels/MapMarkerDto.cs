@@ -7,5 +7,6 @@ namespace SwiftDrop.ViewModels
         public decimal Lng { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty; // "Pickup" or "Delivery"
+        public int RouteOrder { get; set; }
     }
 }
