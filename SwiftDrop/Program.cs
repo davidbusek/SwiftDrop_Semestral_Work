@@ -40,6 +40,9 @@ namespace SwiftDrop
                     options.AccessDeniedPath = "/Account/AccessDenied";
                 });
 
+            // State Management & In-Memory Caching (Data Caching)
+            builder.Services.AddMemoryCache(); // Dependency Injection for IMemoryCache (RAM Optimization)
+
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
