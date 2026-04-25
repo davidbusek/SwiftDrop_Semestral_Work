@@ -21,7 +21,9 @@ namespace SwiftDrop
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
-            // Custom Services Registration
+            // Default Services
+            builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IManagerService, ManagerService>();
             builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 
             // Cart, Order and Delivery Services

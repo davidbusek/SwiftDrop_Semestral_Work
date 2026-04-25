@@ -23,10 +23,13 @@ namespace SwiftDrop.Services
 
         public async Task<IEnumerable<Restaurant>> GetAllActiveRestaurantsAsync()
         {
+            // Performance optimization: Check if active restaurants are already in the memory cache
             if (!_cache.TryGetValue(CacheKeyActiveRestaurants, out IEnumerable<Restaurant>? cachedRestaurants))
             {
+                // If data is not in cache, fetch it from the database
                 cachedRestaurants = await _context.Restaurants.Where(r => r.IsActive.GetValueOrDefault()).ToListAsync();
 
+                // Set cache expiration time
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
 
@@ -87,6 +90,7 @@ namespace SwiftDrop.Services
 
         private void InvalidateCache()
         {
+            // This invalidates the primary cache when the Restaurants DB table changes
             _cache.Remove(CacheKeyActiveRestaurants);
         }
     }

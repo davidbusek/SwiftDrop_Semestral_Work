@@ -1,73 +1,37 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SwiftDrop.Data;
-using SwiftDrop.ViewModels;
+using SwiftDrop.Services;
 
 namespace SwiftDrop.Controllers
 {
     [Authorize(Roles = "RestaurantManager")]
     public class ManagerController : Controller
     {
-        private readonly SwiftDropDbContext _context;
+        private readonly IManagerService _managerService;
 
-        public ManagerController(SwiftDropDbContext context)
+        public ManagerController(IManagerService managerService)
         {
-            _context = context;
+            _managerService = managerService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var pendingOrdersList = await _context.Orders
-                .Where(o => o.Status == "Pending" || o.Status == "Paid" || o.Status == "PickupsInProgress")
-                .Include(o => o.User)
-                .OrderByDescending(o => o.CreatedAt)
-                .ToListAsync();
-
-            var menuItemsList = await _context.Menuitems
-                .OrderByDescending(m => m.Id).Take(50).ToListAsync();
-
-            var model = new ManagerDashboardViewModel
-            {
-                PendingOrders = pendingOrdersList.Count,
-                ActiveItems = menuItemsList.Count,
-                Orders = pendingOrdersList,
-                MenuItems = menuItemsList
-            };
-
+            var model = await _managerService.GetDashboardDataAsync();
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> AdvanceOrderState(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order != null)
-            {
-                if (order.Status == "Pending" || order.Status == "Paid")
-                {
-                    order.Status = "PickupsInProgress";
-                }
-                else if (order.Status == "PickupsInProgress")
-                {
-                    order.Status = "CourierAssigned";
-                }
-                await _context.SaveChangesAsync();
-            }
+            await _managerService.AdvanceOrderStateAsync(id);
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteMenuItem(int id)
         {
-            var item = await _context.Menuitems.FindAsync(id);
-            if (item != null)
-            {
-                _context.Menuitems.Remove(item);
-                await _context.SaveChangesAsync();
-            }
+            await _managerService.DeleteMenuItemAsync(id);
             return RedirectToAction("Index");
         }
     }
