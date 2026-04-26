@@ -27,6 +27,7 @@ namespace SwiftDrop
             builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 
             // Cart, Order and Delivery Services
+            builder.Services.AddHttpClient();
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IDeliveryCostStrategy, SwiftDropDeliveryStrategy>();
             builder.Services.AddScoped<ICartService, CartService>();
