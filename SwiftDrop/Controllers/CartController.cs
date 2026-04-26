@@ -75,11 +75,15 @@ namespace SwiftDrop.Controllers
         }
 
         [HttpPost]
-        public async System.Threading.Tasks.Task<IActionResult> Checkout([FromServices] IOrderService orderService)
+        public async System.Threading.Tasks.Task<IActionResult> Checkout(string street, string city, string zipCode, [FromServices] IOrderService orderService)
         {
             if (!User.Identity.IsAuthenticated)
-            {
                 return RedirectToAction("Login", "Account");
+
+            if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(zipCode))
+            {
+                TempData["ErrorMessage"] = "Please fill in your delivery address before placing the order.";
+                return RedirectToAction("Index");
             }
 
             var cart = _cartService.GetCart();
@@ -87,28 +91,20 @@ namespace SwiftDrop.Controllers
 
             var deliveryFee = _cartService.GetTotalDeliveryPrice();
 
-            // Vytvo?ení objednávky
             var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value;
             if (string.IsNullOrEmpty(userEmail))
-            {
                 return RedirectToAction("Index");
-            }
 
-            var order = await orderService.ProcessCheckoutAsync(userEmail, cart, deliveryFee);
+            var order = await orderService.ProcessCheckoutAsync(userEmail, cart, deliveryFee, street.Trim(), city.Trim(), zipCode.Trim());
 
-            // Mock Platba
             bool isSuccess = await orderService.MockPaymentProcessAsync(order.Id, order.TotalPrice);
 
             _cartService.ClearCart();
 
             if (isSuccess)
-            {
                 TempData["SuccessMessage"] = $"Payment successful! Order #{order.Id} confirmed and is now pending.";
-            }
             else
-            {
                 TempData["ErrorMessage"] = $"Payment link failed for Order #{order.Id}. Transaction denied.";
-            }
 
             return RedirectToAction("Index");
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SwiftDrop.Data;
@@ -10,7 +11,7 @@ namespace SwiftDrop.Services
 {
     public interface IOrderService
     {
-        Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee);
+        Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee, string street, string city, string zipCode);
         Task<bool> MockPaymentProcessAsync(int orderId, decimal amount);
         Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail);
     }
@@ -18,10 +19,12 @@ namespace SwiftDrop.Services
     public class OrderService : IOrderService
     {
         private readonly SwiftDropDbContext _context;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public OrderService(SwiftDropDbContext context)
+        public OrderService(SwiftDropDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail)
@@ -35,26 +38,34 @@ namespace SwiftDrop.Services
                 .ToListAsync();
         }
 
-        public async Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee)
+        public async Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee, string street, string city, string zipCode)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
             if (user == null)
-            {
                 throw new Exception("User not found.");
-            }
 
             var itemPrice = cartItems.Sum(i => i.Price * i.Quantity);
             var totalPrice = itemPrice + deliveryFee;
 
-            // In a real application, AddressId should come from user selection.
-            // Using a default/mock address ID for Demo/Semestral.
-            var address = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == user.Id);
-            int addressId = address?.Id ?? 1; 
+            var deliveryAddress = new Address
+            {
+                UserId = user.Id,
+                Street = street,
+                City = city,
+                ZipCode = zipCode
+            };
+
+            var coords = await GeocodeAddressAsync(street, city);
+            deliveryAddress.Latitude = coords?.Lat;
+            deliveryAddress.Longitude = coords?.Lng;
+
+            _context.Addresses.Add(deliveryAddress);
+            await _context.SaveChangesAsync();
 
             var order = new Order
             {
                 UserId = user.Id,
-                AddressId = addressId,
+                AddressId = deliveryAddress.Id,
                 Status = "Pending",
                 ItemPrice = itemPrice,
                 DeliveryFee = deliveryFee,
@@ -65,31 +76,62 @@ namespace SwiftDrop.Services
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // Skupinujme položky podle restaurace, i když naše UI neumožňuje mix restaurací
-            var subOrder = new Suborder
+            // Skupinujme položky podle restaurace
+            var groupedItems = cartItems.GroupBy(i => i.RestaurantId);
+            foreach(var group in groupedItems) 
             {
-                OrderId = order.Id,
-                RestaurantId = cartItems.First().RestaurantId,
-                Status = "Pending",
-            };
-            
-            _context.Suborders.Add(subOrder);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in cartItems)
-            {
-                _context.Orderitems.Add(new Orderitem
+                var subOrder = new Suborder
                 {
-                    SubOrderId = subOrder.Id,
-                    MenuItemId = item.MenuItemId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Price
-                });
+                    OrderId = order.Id,
+                    RestaurantId = group.Key,
+                    Status = "Pending",
+                };
+                
+                _context.Suborders.Add(subOrder);
+                await _context.SaveChangesAsync();
+
+                foreach (var item in group)
+                {
+                    _context.Orderitems.Add(new Orderitem
+                    {
+                        SubOrderId = subOrder.Id,
+                        MenuItemId = item.MenuItemId,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.Price
+                    });
+                }
             }
 
             await _context.SaveChangesAsync();
 
             return order;
+        }
+
+        private async Task<(decimal Lat, decimal Lng)?> GeocodeAddressAsync(string street, string city)
+        {
+            try
+            {
+                var query = Uri.EscapeDataString($"{street}, {city}, Czech Republic");
+                var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1";
+
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("SwiftDrop/1.0");
+
+                var json = await client.GetStringAsync(url);
+                var doc = System.Text.Json.JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                if (root.GetArrayLength() > 0)
+                {
+                    var first = root[0];
+                    var lat = decimal.Parse(first.GetProperty("lat").GetString()!, System.Globalization.CultureInfo.InvariantCulture);
+                    var lng = decimal.Parse(first.GetProperty("lon").GetString()!, System.Globalization.CultureInfo.InvariantCulture);
+                    return (lat, lng);
+                }
+            }
+            catch { /* geocoding failure is non-fatal */ }
+
+            return null;
         }
 
         public async Task<bool> MockPaymentProcessAsync(int orderId, decimal amount)
@@ -104,8 +146,8 @@ namespace SwiftDrop.Services
             var payment = new Payment
             {
                 OrderId = orderId,
-                PaymentMethod = "CyberCredit",
-                PaymentStatus = paymentSuccess ? "Completed" : "Failed",
+                PaymentMethod = "CardOnline",
+                PaymentStatus = paymentSuccess ? "Paid" : "Unpaid",
                 Amount = amount,
                 CreatedAt = DateTime.Now
             };

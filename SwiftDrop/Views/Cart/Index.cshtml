@@ -125,6 +125,25 @@
                     </div>
 
                     <form method="post" asp-controller="Cart" asp-action="Checkout" class="mb-3">
+                        <h5 class="text-neon mb-2 text-uppercase border-bottom border-secondary pb-2 mt-3">Delivery Address</h5>
+                        <div class="mb-2">
+                            <input type="text" name="street" value="@Model.DeliveryStreet"
+                                   class="form-control bg-dark text-white border-secondary"
+                                   placeholder="Street &amp; Number (e.g. Václavské nám. 1)"
+                                   required />
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" name="city" value="@Model.DeliveryCity"
+                                   class="form-control bg-dark text-white border-secondary"
+                                   placeholder="City (e.g. Praha)"
+                                   required />
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="zipCode" value="@Model.DeliveryZipCode"
+                                   class="form-control bg-dark text-white border-secondary"
+                                   placeholder="ZIP Code (e.g. 110 00)"
+                                   required />
+                        </div>
                         <button type="submit" class="btn cyber-btn w-100 mt-2 text-uppercase fw-bold">
                             <i class="bi bi-credit-card me-1"></i> Payment
                         </button>
