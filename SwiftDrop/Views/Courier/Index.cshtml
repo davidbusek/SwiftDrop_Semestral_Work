@@ -16,7 +16,6 @@
             margin-bottom: 2rem;
             z-index: 1; /* Keeping it from overlapping modals/dropdowns */
         }
-        /* Skrytí boxu s instrukcemi, chceme jen nakreslit čáru */
         .leaflet-routing-container {
             display: none !important;
         }
@@ -155,7 +154,6 @@
             var routingControl = null;
 
             function showOrderOnMap(orderId) {
-                // Vyčištění předchozích bodů a tras
                 currentLayerGroup.clearLayers();
                 if (routingControl != null) {
                     map.removeControl(routingControl);
@@ -203,11 +201,11 @@
                         lineOptions: {
                             styles: [{ color: '#0dcaf0', opacity: 0.8, weight: 5 }]
                         },
-                        show: false, // Skryjeme defaultní tabulku s itinerářem
+                        show: false, 
                         addWaypoints: false,
                         routeWhileDragging: false,
                         fitSelectedRoutes: false,
-                        createMarker: function() { return null; } // Zabrání Leaflet Routing Machine kreslit vlastní defaultní markery
+                        createMarker: function() { return null; } 
                     }).addTo(map);
                 }
 
