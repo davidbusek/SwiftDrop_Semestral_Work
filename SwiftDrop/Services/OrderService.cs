@@ -75,8 +75,7 @@ namespace SwiftDrop.Services
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-
-            // Skupinujme položky podle restaurace
+            
             var groupedItems = cartItems.GroupBy(i => i.RestaurantId);
             foreach(var group in groupedItems) 
             {
@@ -136,10 +135,10 @@ namespace SwiftDrop.Services
 
         public async Task<bool> MockPaymentProcessAsync(int orderId, decimal amount)
         {
-            // Simulace zdržení na platební bráně
+            // Simulate payment delay
             await Task.Delay(1000);
 
-            // Pseudo-náhodné úspěšné vyhodnocení (např. 90% šance na úspěch)
+            // Pseudo-random payment success (90% success rate)
             var rng = new Random();
             bool paymentSuccess = rng.Next(0, 100) > 10;
 
