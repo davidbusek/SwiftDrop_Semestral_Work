@@ -1,0 +1,70 @@
+===========================================================================
+ASP.NET CORE 9.0 PROJECT SETUP GUIDE
+===========================================================================
+
+PROJECT: SwiftDrop
+ENVIRONMENT: .NET 9.0 + XAMPP (MySQL)
+
+---------------------------------------------------------------------------
+1. PREREQUISITES
+---------------------------------------------------------------------------
+Before starting, ensure the following are installed:
+- .NET 9.0 SDK
+- XAMPP (with MySQL/MariaDB)
+- Visual Studio 2022, 2026 or VS Code
+
+---------------------------------------------------------------------------
+2. DATABASE SETUP (XAMPP)
+---------------------------------------------------------------------------
+1. Open XAMPP Control Panel.
+2. Start the 'Apache' and 'MySQL' modules.
+3. Open your browser and go to: http://localhost/phpmyadmin/
+4. IMPORTING THE DATABASE:
+   - Click the 'Import' tab at the top of the phpMyAdmin home screen.
+   - Click 'Choose File' and select 'swiftdropdb.sql' from the /DbSetup folder.
+   - Click 'Import' (or 'Go') at the bottom.
+
+   NOTE: The SQL script is configured to create the database schema
+   automatically. If the import fails with a "No database selected" error,
+   please manually create a database named 'swiftdropdb' first,
+   click on it, and then run the import again.
+
+---------------------------------------------------------------------------
+3. APPLICATION CONFIGURATION
+---------------------------------------------------------------------------
+The application uses a specific connection string optimized for a Linux
+development environment using XAMPP (LAMPP) Unix sockets.
+
+File: appsettings.json
+----------------------
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=/opt/lampp/var/mysql/mysql.sock;Database=swiftdropdb;User=root;Password=;"
+  }
+}
+
+NOTE FOR WINDOWS USERS:
+If running on Windows XAMPP, you must change the "Server" value
+from the socket path to "localhost" in appsettings.json:
+"Server=localhost;Database=swiftdropdb;User=root;Password=;"
+
+---------------------------------------------------------------------------
+4. RUNNING THE APPLICATION
+---------------------------------------------------------------------------
+1. Open a terminal or command prompt in the project root directory.
+2. Restore dependencies:
+   > dotnet restore
+
+3. Run the project:
+   > dotnet run
+
+NOTE: You can also use the 'Run' button (F5) inside your IDE of choice.
+
+---------------------------------------------------------------------------
+5. TROUBLESHOOTING
+---------------------------------------------------------------------------
+- MySQL Error: Ensure no other service (like Docker or standalone MySQL)
+  is occupying port 3306.
+- SSL Trust: If the browser shows a security warning, run:
+  > dotnet dev-certs https --trust
+===========================================================================
