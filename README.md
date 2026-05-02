@@ -1,9 +1,9 @@
-# ⚡ SwiftDrop 
+# SwiftDrop 
 > **Multi-Restaurant Delivery System** > *Academic project for KIV/MNS (Software Design and Modeling) and KIV/PNET (ASP.NET Web Applications).*
 
 ---
 
-## 📖 Project Overview
+## Project Overview
 SwiftDrop is a next-generation food delivery platform developed as a **semester project for the University of West Bohemia (ZČU)**. 
 It specifically targets the "Multi-Restaurant Dilemma," allowing students and users to combine items from multiple restaurants into a single order with an optimized delivery fee.
 
@@ -15,7 +15,7 @@ It specifically targets the "Multi-Restaurant Dilemma," allowing students and us
 
 ---
 
-## 🏗️ Architecture & Design Patterns
+## Architecture & Design Patterns
 The project is built using the **ASP.NET Core MVC** framework and follows the **Clean Architecture** principles (separation of concerns).
 
 
@@ -28,7 +28,7 @@ The project is built using the **ASP.NET Core MVC** framework and follows the **
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Backend:** .NET 9.0 (C#)
 - **Frontend:** Razor Pages & MVC (ASP.NET Core), Bootstrap 5, Custom CSS (Cyberpunk/Dark Theme)
 - **Database:** MariaDB / MySQL (Entity Framework Core)
@@ -36,7 +36,7 @@ The project is built using the **ASP.NET Core MVC** framework and follows the **
 
 ---
 
-## ⚠️ Academic Disclaimer
+## Academic Disclaimer
 This project is developed strictly for **educational purposes** within the following courses at **University of West Bohemia (KIV/FAV)**:
 * **KIV/MNS** (Modelování a navrhování softwaru)
 * **KIV/PNET** (Programování v prostředí .NET)
