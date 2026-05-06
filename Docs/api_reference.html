@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftDrop — API Reference</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #1a1a2e; background: #f8f9fa; }
+header { background: #16213e; color: white; padding: 20px 40px; }
+header h1 { font-size: 1.8rem; }
+header p { opacity: .8; margin-top: 4px; }
+nav { background: #0f3460; width: 260px; position: fixed; top: 0; left: 0; height: 100vh;
+      overflow-y: auto; padding-top: 80px; }
+nav a { display: block; color: #cdd3e0; padding: 6px 20px; text-decoration: none; font-size: 13px; }
+nav a:hover { background: rgba(255,255,255,.1); color: white; }
+nav .ns-header { color: #a0aec0; font-size: 11px; padding: 12px 20px 4px;
+                 text-transform: uppercase; letter-spacing: 1px; }
+main { margin-left: 260px; padding: 40px; max-width: 980px; }
+.type-section { background: white; border-radius: 8px; padding: 28px;
+                margin-bottom: 28px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.type-section h3 { font-size: 1.3rem; color: #16213e; border-bottom: 2px solid #e2e8f0;
+                   padding-bottom: 8px; margin-bottom: 14px; }
+.type-summary { color: #4a5568; margin-bottom: 16px; line-height: 1.6; }
+.member { border-left: 3px solid #e2e8f0; padding: 10px 16px; margin: 10px 0; }
+.member h4 { font-size: .95rem; margin-bottom: 6px; }
+.member p { color: #4a5568; margin: 4px 0; line-height: 1.5; }
+.remarks { color: #718096; font-style: italic; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 11px;
+         font-weight: 600; text-transform: uppercase; margin-right: 6px; }
+.badge.method   { background: #ebf8ff; color: #2b6cb0; }
+.badge.property { background: #f0fff4; color: #276749; }
+.badge.field    { background: #fff5f5; color: #c53030; }
+.badge.event    { background: #faf5ff; color: #6b46c1; }
+.badge.member   { background: #fffaf0; color: #c05621; }
+table.params { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 13px; }
+table.params th { background: #f7fafc; text-align: left; padding: 5px 10px;
+                  border-bottom: 1px solid #e2e8f0; }
+table.params td { padding: 4px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+code { background: #edf2f7; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+<nav>
+<div style="padding:16px 20px;color:white;font-weight:700;font-size:1rem;background:#0d2137;">
+  SwiftDrop API
+</div>
+<div class="ns-header">SwiftDrop.Controllers</div><a href="#SwiftDrop.Controllers.AccountController">AccountController</a><a href="#SwiftDrop.Controllers.AdminController">AdminController</a><a href="#SwiftDrop.Controllers.CartController">CartController</a><a href="#SwiftDrop.Controllers.CourierController">CourierController</a><a href="#SwiftDrop.Controllers.ManagerController">ManagerController</a><a href="#SwiftDrop.Controllers.OrdersController">OrdersController</a><a href="#SwiftDrop.Controllers.RestaurantsController">RestaurantsController</a><div class="ns-header">SwiftDrop.Controllers.Api</div><a href="#SwiftDrop.Controllers.Api.CourierApiController">CourierApiController</a><div class="ns-header">SwiftDrop.Models</div><a href="#SwiftDrop.Models.Address">Address</a><a href="#SwiftDrop.Models.CartItem">CartItem</a><a href="#SwiftDrop.Models.Order">Order</a><a href="#SwiftDrop.Models.Restaurant">Restaurant</a><a href="#SwiftDrop.Models.User">User</a><div class="ns-header">SwiftDrop.Services</div><a href="#SwiftDrop.Services.AdminService">AdminService</a><a href="#SwiftDrop.Services.CartService">CartService</a><a href="#SwiftDrop.Services.CourierService">CourierService</a><a href="#SwiftDrop.Services.IAdminService">IAdminService</a><a href="#SwiftDrop.Services.ICartService">ICartService</a><a href="#SwiftDrop.Services.ICourierService">ICourierService</a><a href="#SwiftDrop.Services.IDeliveryCostStrategy">IDeliveryCostStrategy</a><a href="#SwiftDrop.Services.IManagerService">IManagerService</a><a href="#SwiftDrop.Services.IOrderService">IOrderService</a><a href="#SwiftDrop.Services.IRestaurantService">IRestaurantService</a><a href="#SwiftDrop.Services.ManagerService">ManagerService</a><a href="#SwiftDrop.Services.OrderService">OrderService</a><a href="#SwiftDrop.Services.RestaurantService">RestaurantService</a><a href="#SwiftDrop.Services.SwiftDropDeliveryStrategy">SwiftDropDeliveryStrategy</a><div class="ns-header">SwiftDrop.Services.OrderStates</div><a href="#SwiftDrop.Services.OrderStates.CanceledState">CanceledState</a><a href="#SwiftDrop.Services.OrderStates.CourierAssignedState">CourierAssignedState</a><a href="#SwiftDrop.Services.OrderStates.DeliveredState">DeliveredState</a><a href="#SwiftDrop.Services.OrderStates.DeliveringState">DeliveringState</a><a href="#SwiftDrop.Services.OrderStates.IOrderState">IOrderState</a><a href="#SwiftDrop.Services.OrderStates.OrderStateFactory">OrderStateFactory</a><a href="#SwiftDrop.Services.OrderStates.PaidState">PaidState</a><a href="#SwiftDrop.Services.OrderStates.PendingState">PendingState</a><a href="#SwiftDrop.Services.OrderStates.PickupsInProgressState">PickupsInProgressState</a><div class="ns-header">SwiftDrop.ViewModels</div><a href="#SwiftDrop.ViewModels.AdminDashboardViewModel">AdminDashboardViewModel</a><a href="#SwiftDrop.ViewModels.CartViewModel">CartViewModel</a><a href="#SwiftDrop.ViewModels.CourierDashboardViewModel">CourierDashboardViewModel</a><a href="#SwiftDrop.ViewModels.LoginViewModel">LoginViewModel</a><a href="#SwiftDrop.ViewModels.ManagerDashboardViewModel">ManagerDashboardViewModel</a><a href="#SwiftDrop.ViewModels.MapMarkerDto">MapMarkerDto</a><a href="#SwiftDrop.ViewModels.MyOrdersViewModel">MyOrdersViewModel</a><a href="#SwiftDrop.ViewModels.RegisterViewModel">RegisterViewModel</a>
+</nav>
+<main>
+<header style="margin:-40px -40px 32px;padding:28px 40px;background:#16213e;color:white;margin-left:-40px;">
+  <h1>SwiftDrop — API Reference</h1>
+  <p>Auto-generated from XML documentation comments. SwiftDrop v1.0 · ASP.NET Core 9</p>
+</header>
+<section id="SwiftDrop.Controllers.AccountController" class="type-section">
+<h3>AccountController</h3>
+<p class="type-summary">Handles user registration, login and logout using cookie-based authentication. Passwords are hashed with BCrypt before storage.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.AccountController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Login</code></h4>
+<p>Displays the login form.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Login</code></h4>
+<p>Authenticates the user. On success, issues a cookie and redirects to the home page.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>model</code></td><td>Login credentials.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Logout</code></h4>
+<p>Signs the user out and redirects to the home page.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Register</code></h4>
+<p>Displays the registration form.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Register</code></h4>
+<p>Creates a new customer account. Rejects duplicate email addresses.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>model</code></td><td>Registration data.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Controllers.AdminController" class="type-section">
+<h3>AdminController</h3>
+<p class="type-summary">Dashboard for platform administrators. Accessible only to users with the <code>Admin</code> role. role.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.AdminController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>adminService</code></td><td>Admin service providing statistics and user management.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteUser</code></h4>
+<p>Permanently deletes the user identified by <code>id</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the user to delete.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays the admin dashboard with platform statistics and recent users.</p>
+</div>
+</section><section id="SwiftDrop.Controllers.CartController" class="type-section">
+<h3>CartController</h3>
+<p class="type-summary">Manages the customer's shopping cart and triggers the checkout flow. Cart state is persisted in the HTTP session via <code>SwiftDrop.Services.ICartService</code> />. .</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.CartController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>cartService</code></td><td>Session-backed cart service.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Add</code></h4>
+<p>Adds an item to the cart (called via JSON from the restaurant detail page). Returns the updated total item count and delivery fee.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>item</code></td><td>Item to add.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Checkout</code></h4>
+<p>Processes the checkout: validates the delivery address, creates the order, runs mock payment and clears the cart. Requires the user to be authenticated.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>street</code></td><td>Delivery street.</td></tr>
+<tr><td><code>city</code></td><td>Delivery city.</td></tr>
+<tr><td><code>zipCode</code></td><td>Delivery ZIP code.</td></tr>
+<tr><td><code>orderService</code></td><td>Order service injected per-request.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Clear</code></h4>
+<p>Clears all items from the cart.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays the cart summary with item list, subtotal, delivery fee and total.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Remove</code></h4>
+<p>Removes a specific item from the cart.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>menuItemId</code></td><td>ID of the item to remove.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateQuantity</code></h4>
+<p>Updates the quantity of a specific menu item in the cart.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>menuItemId</code></td><td>ID of the item to update.</td></tr>
+<tr><td><code>quantity</code></td><td>New quantity; 0 removes the item.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Controllers.CourierController" class="type-section">
+<h3>CourierController</h3>
+<p class="type-summary">Dashboard for couriers. Accessible only to users with the <code>Courier</code> role. role.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.CourierController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>courierService</code></td><td>Courier service for deliveries and map data.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays the courier dashboard with available orders and an optimized map route.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateDeliveryState</code></h4>
+<p>Advances the delivery state of the order identified by <code>id</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the order to advance.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Controllers.ManagerController" class="type-section">
+<h3>ManagerController</h3>
+<p class="type-summary">Dashboard for restaurant managers. Accessible only to users with the <code>RestaurantManager</code> role. role.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.ManagerController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>managerService</code></td><td>Manager service for order and menu-item operations.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceOrderState</code></h4>
+<p>Advances the order identified by <code>id</code> to its next state. to its next state.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the order to advance.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteMenuItem</code></h4>
+<p>Deletes the menu item identified by <code>id</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the menu item to delete.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays the manager dashboard with pending orders and menu items.</p>
+</div>
+</section><section id="SwiftDrop.Controllers.OrdersController" class="type-section">
+<h3>OrdersController</h3>
+<p class="type-summary">Displays the authenticated customer's order history.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.OrdersController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>orderService</code></td><td>Service for retrieving order data.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays a list of all orders placed by the currently logged-in user.</p>
+</div>
+</section><section id="SwiftDrop.Controllers.RestaurantsController" class="type-section">
+<h3>RestaurantsController</h3>
+<p class="type-summary">Handles browsing of restaurants and their menus.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.RestaurantsController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurantService</code></td><td>Restaurant data service with optional caching.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Create</code></h4>
+<p>Displays the restaurant creation form.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Create</code></h4>
+<p>Persists a new restaurant to the database.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurant</code></td><td>Restaurant data submitted from the form.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Details</code></h4>
+<p>Displays the detail page of a restaurant including its menu categories and items.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the restaurant.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Index</code></h4>
+<p>Displays a list of all restaurants.</p>
+</div>
+</section><section id="SwiftDrop.Controllers.Api.CourierApiController" class="type-section">
+<h3>CourierApiController</h3>
+<p class="type-summary">REST API exposing courier operations for external clients. Allows the <code>SwiftDrop.Client</code> console application to read dashboard data and advance order states without a browser session. console application to read dashboard data and advance order states without a browser session.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Controllers.Api.CourierApiController</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>courierService</code></td><td>Courier service shared with the MVC controller.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceState</code></h4>
+<p>Advances the delivery state of the order identified by <code>id</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the order to advance.</td></tr>
+</table>
+<p><strong>Returns:</strong> 200 OK with a confirmation message.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardData</code></h4>
+<p>Returns the current courier dashboard data as JSON, including active orders and optimized map markers.</p>
+<p><strong>Returns:</strong> 200 OK with <code>SwiftDrop.ViewModels.CourierDashboardViewModel</code> /> payload. payload.</p>
+</div>
+</section><section id="SwiftDrop.Models.Address" class="type-section">
+<h3>Address</h3>
+<p class="type-summary">Represents a physical address used for restaurant locations and delivery destinations. GPS coordinates (<code>SwiftDrop.Models.Address.Latitude</code> />, , <code>SwiftDrop.Models.Address.Longitude</code> />) are populated by the Nominatim geocoding call during checkout. ) are populated by the Nominatim geocoding call during checkout.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>City</code></h4>
+<p>City name.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Id</code></h4>
+<p>Primary key.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Latitude</code></h4>
+<p>WGS-84 latitude; <code>null</code> when geocoding was not performed or failed. when geocoding was not performed or failed.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Longitude</code></h4>
+<p>WGS-84 longitude; <code>null</code> when geocoding was not performed or failed. when geocoding was not performed or failed.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Orders</code></h4>
+<p>Orders delivered to this address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Restaurants</code></h4>
+<p>Restaurants located at this address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Street</code></h4>
+<p>Street name and house number.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>User</code></h4>
+<p>Owner of this address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>UserId</code></h4>
+<p>Foreign key of the user who owns this address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ZipCode</code></h4>
+<p>Postal / ZIP code.</p>
+</div>
+</section><section id="SwiftDrop.Models.CartItem" class="type-section">
+<h3>CartItem</h3>
+<p class="type-summary">Represents a single line in the customer's session-based shopping cart. Instances are serialized to JSON and stored in the HTTP session.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ImageUrl</code></h4>
+<p>URL of the menu item's image, used on the cart page.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>MenuItemId</code></h4>
+<p>Primary key of the underlying <code>SwiftDrop.Models.Menuitem</code> />..</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Name</code></h4>
+<p>Display name of the menu item.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Price</code></h4>
+<p>Unit price in CZK at the time the item was added to the cart.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Quantity</code></h4>
+<p>Number of units ordered.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>RestaurantId</code></h4>
+<p>Primary key of the restaurant this item belongs to.</p>
+</div>
+</section><section id="SwiftDrop.Models.Order" class="type-section">
+<h3>Order</h3>
+<p class="type-summary">Represents a customer order that may span multiple restaurants. Each restaurant's portion is tracked as a separate <code>SwiftDrop.Models.Suborder</code> />. Status transitions are managed by the State Pattern via . Status transitions are managed by the State Pattern via <code>SwiftDrop.Services.OrderStates.OrderStateFactory</code> />. .</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Address</code></h4>
+<p>Delivery address navigation property.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>AddressId</code></h4>
+<p>Foreign key of the delivery address for this order.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CreatedAt</code></h4>
+<p>Timestamp when the order was created.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveredAt</code></h4>
+<p>Timestamp set when the order transitions to <code>Delivered</code>..</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveryFee</code></h4>
+<p>Delivery fee calculated by <code>SwiftDrop.Services.IDeliveryCostStrategy</code> />..</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Id</code></h4>
+<p>Primary key.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ItemPrice</code></h4>
+<p>Sum of all item unit prices multiplied by their quantities, in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Payments</code></h4>
+<p>Payment records associated with this order.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Status</code></h4>
+<p>Current status string. Valid values: <code>Pending</code>, , <code>Paid</code>, , <code>PickupsInProgress</code>, , <code>CourierAssigned</code>, , <code>Delivering</code>, , <code>Delivered</code>, , <code>Canceled</code>. .</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Suborders</code></h4>
+<p>Per-restaurant sub-orders that make up this order.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>TotalPrice</code></h4>
+<p>Total charged to the customer: <code>SwiftDrop.Models.Order.ItemPrice</code> /> + + <code>SwiftDrop.Models.Order.DeliveryFee</code> />..</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>User</code></h4>
+<p>Customer who placed the order.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>UserId</code></h4>
+<p>Foreign key of the customer who placed the order.</p>
+</div>
+</section><section id="SwiftDrop.Models.Restaurant" class="type-section">
+<h3>Restaurant</h3>
+<p class="type-summary">Represents a restaurant partner on the SwiftDrop platform. A restaurant has a menu organized into <code>SwiftDrop.Models.Category</code> /> objects and is linked to a physical objects and is linked to a physical <code>SwiftDrop.Models.Restaurant.Address</code> /> used for courier pickup routing. used for courier pickup routing.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Address</code></h4>
+<p>Physical address used for courier pickup.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>AddressId</code></h4>
+<p>Foreign key of the restaurant's physical address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>AverageRating</code></h4>
+<p>Cached average review rating (0–5).</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Categories</code></h4>
+<p>Menu categories containing the restaurant's menu items.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ContactEmail</code></h4>
+<p>Contact email address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ContactPhone</code></h4>
+<p>Contact phone number.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Description</code></h4>
+<p>Short description shown on the listing page.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>EstimatedPrepTimeMinutes</code></h4>
+<p>Typical food preparation time in minutes.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Id</code></h4>
+<p>Primary key.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>IsAcceptingOrders</code></h4>
+<p>Indicates whether the restaurant is currently accepting new orders.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>IsActive</code></h4>
+<p>Indicates whether the restaurant is visible in the listing.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>LogoUrl</code></h4>
+<p>URL of the restaurant's logo image.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>MinimumOrderAmount</code></h4>
+<p>Minimum order amount in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Name</code></h4>
+<p>Display name of the restaurant.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Openinghours</code></h4>
+<p>Opening hours for each day of the week.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ReviewCount</code></h4>
+<p>Total number of reviews received.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Reviews</code></h4>
+<p>Customer reviews for this restaurant.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Suborders</code></h4>
+<p>Sub-orders associated with deliveries from this restaurant.</p>
+</div>
+</section><section id="SwiftDrop.Models.User" class="type-section">
+<h3>User</h3>
+<p class="type-summary">Represents a registered user of the SwiftDrop platform. The <code>SwiftDrop.Models.User.Role</code> /> field controls access to role-restricted controllers ( field controls access to role-restricted controllers (<code>Admin</code>, , <code>RestaurantManager</code>, , <code>Courier</code>, , <code>Customer</code>). ).</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Addresses</code></h4>
+<p>Delivery addresses saved by this user.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Email</code></h4>
+<p>Unique email address used for login.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>FirstName</code></h4>
+<p>User's first name.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Id</code></h4>
+<p>Primary key.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>IsActive</code></h4>
+<p>Indicates whether the account is active.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>LastName</code></h4>
+<p>User's last name.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Orders</code></h4>
+<p>Orders placed by this user.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>PasswordHash</code></h4>
+<p>BCrypt hash of the user's password.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>PhoneNumber</code></h4>
+<p>Optional phone number.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>RegisteredAt</code></h4>
+<p>Timestamp when the account was created.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Reviews</code></h4>
+<p>Reviews written by this user.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Role</code></h4>
+<p>Role string stored as a claim: <code>Admin</code>, , <code>RestaurantManager</code>, , <code>Courier</code>, or , or <code>Customer</code>..</p>
+</div>
+</section><section id="SwiftDrop.Services.AdminService" class="type-section">
+<h3>AdminService</h3>
+<p class="type-summary">EF Core implementation of <code>SwiftDrop.Services.IAdminService</code> />..</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.AdminService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteUserAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.CartService" class="type-section">
+<h3>CartService</h3>
+<p class="type-summary">Session-backed implementation of <code>SwiftDrop.Services.ICartService</code> />. Cart data is serialized as JSON and stored under a fixed session key. Delivery cost is delegated to the injected . Cart data is serialized as JSON and stored under a fixed session key. Delivery cost is delegated to the injected <code>SwiftDrop.Services.IDeliveryCostStrategy</code> />. .</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.CartService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>httpContextAccessor</code></td><td>Provides access to the current HTTP session.</td></tr>
+<tr><td><code>deliveryStrategy</code></td><td>Strategy used to compute delivery fees.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AddToCart</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>ClearCart</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetCart</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetTotalDeliveryPrice</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>RemoveItem</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateQuantity</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.CourierService" class="type-section">
+<h3>CourierService</h3>
+<p class="type-summary">EF Core implementation of <code>SwiftDrop.Services.ICourierService</code> />..</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.CourierService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceDeliveryStateAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>CalculateDistance</code></h4>
+<p>Calculates the great-circle distance between two GPS coordinates using the Haversine formula.</p>
+<p><strong>Returns:</strong> Distance in metres.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetPermutations``1</code></h4>
+<p>Generates all permutations of <code>list</code> with the given with the given <code>length</code>..</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>OptimizeRoute</code></h4>
+<p>Returns <code>pickups</code> reordered to minimize total travel distance before reaching reordered to minimize total travel distance before reaching <code>dropoff</code> (brute-force TSP for small pickup counts). (brute-force TSP for small pickup counts).</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>pickups</code></td><td>Restaurant pickup points for a single order.</td></tr>
+<tr><td><code>dropoff</code></td><td>Customer delivery destination, or <code>null</code> if unavailable. if unavailable.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Services.IAdminService" class="type-section">
+<h3>IAdminService</h3>
+<p class="type-summary">Provides administrative operations such as platform-wide statistics and user management.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteUserAsync</code></h4>
+<p>Permanently deletes the user identified by <code>id</code>. Has no effect if the user does not exist. . Has no effect if the user does not exist.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the user to delete.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+<p>Aggregates platform statistics and returns the latest users for the admin dashboard.</p>
+</div>
+</section><section id="SwiftDrop.Services.ICartService" class="type-section">
+<h3>ICartService</h3>
+<p class="type-summary">Manages the customer's shopping cart stored in the HTTP session.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AddToCart</code></h4>
+<p>Adds <code>item</code> to the cart. If an item with the same to the cart. If an item with the same <code>SwiftDrop.Models.CartItem.MenuItemId</code> /> already exists, its quantity is incremented instead of adding a duplicate. already exists, its quantity is incremented instead of adding a duplicate.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>item</code></td><td>The item to add.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>ClearCart</code></h4>
+<p>Empties the cart by removing the session key entirely.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetCart</code></h4>
+<p>Returns all items currently in the session cart.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetTotalDeliveryPrice</code></h4>
+<p>Calculates the delivery fee for the current cart contents using the injected <code>SwiftDrop.Services.IDeliveryCostStrategy</code> />. .</p>
+<p><strong>Returns:</strong> Delivery fee in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>RemoveItem</code></h4>
+<p>Removes the item identified by <code>menuItemId</code> from the cart. from the cart.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>menuItemId</code></td><td>ID of the menu item to remove.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateQuantity</code></h4>
+<p>Sets the quantity of a specific menu item in the cart. Removes the item when <code>quantity</code> is zero or less. is zero or less.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>menuItemId</code></td><td>ID of the menu item to update.</td></tr>
+<tr><td><code>quantity</code></td><td>New quantity; use 0 to remove.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Services.ICourierService" class="type-section">
+<h3>ICourierService</h3>
+<p class="type-summary">Provides courier-facing operations: dashboard data with available deliveries, map markers with an optimized pickup route, and order state advancement.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceDeliveryStateAsync</code></h4>
+<p>Advances the delivery state of the order identified by <code>orderId</code> using the State Pattern ( using the State Pattern (<code>SwiftDrop.Services.OrderStates.OrderStateFactory</code> />). ).</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>orderId</code></td><td>Primary key of the order to advance.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+<p>Returns all orders in <code>CourierAssigned</code> or or <code>Delivering</code> state, along with map markers sorted by the optimal pickup route. state, along with map markers sorted by the optimal pickup route.</p>
+</div>
+</section><section id="SwiftDrop.Services.IDeliveryCostStrategy" class="type-section">
+<h3>IDeliveryCostStrategy</h3>
+<p class="type-summary">Strategy Pattern interface for delivery cost calculation. Implementations can define different pricing rules (flat fee, distance-based, etc.) without changing the cart or checkout logic.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>CalculateDeliveryCost</code></h4>
+<p>Calculates the total delivery fee for the given collection of cart items.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>items</code></td><td>The items currently in the customer's cart.</td></tr>
+</table>
+<p><strong>Returns:</strong> The delivery fee in CZK.</p>
+</div>
+</section><section id="SwiftDrop.Services.IManagerService" class="type-section">
+<h3>IManagerService</h3>
+<p class="type-summary">Provides restaurant-manager operations: viewing incoming orders, advancing order states and managing menu items.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceOrderStateAsync</code></h4>
+<p>Advances the order identified by <code>id</code> to its next state using the State Pattern ( to its next state using the State Pattern (<code>SwiftDrop.Services.OrderStates.OrderStateFactory</code> />). ).</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the order to advance.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteMenuItemAsync</code></h4>
+<p>Deletes the menu item identified by <code>id</code>. Has no effect if the item does not exist. . Has no effect if the item does not exist.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the menu item to delete.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+<p>Returns pending orders and active menu items for the manager dashboard.</p>
+</div>
+</section><section id="SwiftDrop.Services.IOrderService" class="type-section">
+<h3>IOrderService</h3>
+<p class="type-summary">Handles order creation, payment processing and order history retrieval.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetUserOrdersByEmailAsync</code></h4>
+<p>Returns all orders placed by the user with the given email, newest first.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>userEmail</code></td><td>Email of the user whose orders to retrieve.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>MockPaymentProcessAsync</code></h4>
+<p>Simulates a card payment with a 90 % success rate. Persists a <code>SwiftDrop.Models.Payment</code> /> record and updates the order status to record and updates the order status to <code>Paid</code> or or <code>Canceled</code> accordingly. accordingly.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>orderId</code></td><td>The order to pay for.</td></tr>
+<tr><td><code>amount</code></td><td>Amount charged in CZK.</td></tr>
+</table>
+<p><strong>Returns:</strong> <code>true</code> if payment succeeded; if payment succeeded; <code>false</code> otherwise. otherwise.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>ProcessCheckoutAsync</code></h4>
+<p>Creates a complete order from the current cart: persists a delivery address (geocoded via Nominatim), the order record, sub-orders per restaurant, and all order items.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>userEmail</code></td><td>Email of the authenticated customer.</td></tr>
+<tr><td><code>cartItems</code></td><td>Items to be ordered.</td></tr>
+<tr><td><code>deliveryFee</code></td><td>Pre-calculated delivery fee in CZK.</td></tr>
+<tr><td><code>street</code></td><td>Delivery street.</td></tr>
+<tr><td><code>city</code></td><td>Delivery city.</td></tr>
+<tr><td><code>zipCode</code></td><td>Delivery ZIP code.</td></tr>
+</table>
+<p><strong>Returns:</strong> The newly created <code>SwiftDrop.Models.Order</code> />..</p>
+</div>
+</section><section id="SwiftDrop.Services.IRestaurantService" class="type-section">
+<h3>IRestaurantService</h3>
+<p class="type-summary">Provides CRUD operations and read queries for <code>SwiftDrop.Models.Restaurant</code> /> data. Implementations may add caching on top of the database layer. data. Implementations may add caching on top of the database layer.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>CreateAsync</code></h4>
+<p>Persists a new restaurant to the database and invalidates the cache.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurant</code></td><td>The restaurant to create.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteAsync</code></h4>
+<p>Deletes the restaurant identified by <code>id</code> and invalidates the cache. and invalidates the cache.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the restaurant to delete.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetAllAsync</code></h4>
+<p>Returns all restaurants regardless of active status.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetByIdAsync</code></h4>
+<p>Returns the restaurant with the given <code>id</code>, or , or <code>null</code> if not found. if not found.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>id</code></td><td>Primary key of the restaurant.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetCategoriesWithMenuItemsAsync</code></h4>
+<p>Returns all menu categories (with their items) for the given restaurant.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurantId</code></td><td>Primary key of the restaurant.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateAsync</code></h4>
+<p>Updates an existing restaurant record and invalidates the cache.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurant</code></td><td>The restaurant with updated values.</td></tr>
+</table>
+</div>
+</section><section id="SwiftDrop.Services.ManagerService" class="type-section">
+<h3>ManagerService</h3>
+<p class="type-summary">EF Core implementation of <code>SwiftDrop.Services.IManagerService</code> />..</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.ManagerService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>AdvanceOrderStateAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteMenuItemAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetDashboardDataAsync</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderService" class="type-section">
+<h3>OrderService</h3>
+<p class="type-summary">EF Core implementation of <code>SwiftDrop.Services.IOrderService</code> />..</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.OrderService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+<tr><td><code>httpClientFactory</code></td><td>Factory used to call the Nominatim geocoding API.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GeocodeAddressAsync</code></h4>
+<p>Geocodes a Czech address using the OpenStreetMap Nominatim API. Returns <code>null</code> silently on any error — geocoding failure is non-fatal. silently on any error — geocoding failure is non-fatal.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetUserOrdersByEmailAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>MockPaymentProcessAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>ProcessCheckoutAsync</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.RestaurantService" class="type-section">
+<h3>RestaurantService</h3>
+<p class="type-summary">EF Core + in-memory cache implementation of <code>SwiftDrop.Services.IRestaurantService</code> />. Frequently read lists are cached for 15 minutes (Cache-Aside Pattern) and invalidated on any write operation. . Frequently read lists are cached for 15 minutes (Cache-Aside Pattern) and invalidated on any write operation.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>#ctor</code></h4>
+<p>Initializes a new instance of <code>SwiftDrop.Services.RestaurantService</code> />. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>context</code></td><td>Database context.</td></tr>
+<tr><td><code>cache</code></td><td>In-memory cache for reducing DB round-trips.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>CreateAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>DeleteAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetAllActiveRestaurantsAsync</code></h4>
+<p>Returns all active restaurants. Result is cached for 15 minutes.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetAllAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetByIdAsync</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetCategoriesWithMenuItemsAsync</code></h4>
+<p>Returns all menu categories with their items for the given restaurant. Result is cached per restaurant for 15 minutes.</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>restaurantId</code></td><td>Primary key of the restaurant.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>InvalidateCache</code></h4>
+<p>Removes the restaurant list cache entry so the next read fetches fresh data.</p>
+</div>
+<div class="member">
+<h4><span class="badge method">method</span> <code>UpdateAsync</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.SwiftDropDeliveryStrategy" class="type-section">
+<h3>SwiftDropDeliveryStrategy</h3>
+<p class="type-summary">Default delivery cost strategy used by SwiftDrop. Charges a base fee of 39 CZK for the first restaurant plus 25 CZK for each additional restaurant in the same order.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>CalculateDeliveryCost</code></h4>
+<p>Calculates the delivery fee based on the number of unique restaurants present in <code>items</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>items</code></td><td>Cart items to calculate delivery for.</td></tr>
+</table>
+<p><strong>Returns:</strong> <code>0</code> when the cart is empty; otherwise when the cart is empty; otherwise <code>39 + (n-1) * 25</code> CZK, where CZK, where <code>n</code> is the number of distinct restaurants. is the number of distinct restaurants.</p>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.CanceledState" class="type-section">
+<h3>CanceledState</h3>
+<p class="type-summary">Terminal state — order was canceled (e.g. payment failure). No further transitions are possible.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.CourierAssignedState" class="type-section">
+<h3>CourierAssignedState</h3>
+<p class="type-summary">A courier has been assigned and is on their way to pick up the order. Transitions to <code>Delivering</code> when the courier confirms pickup. when the courier confirms pickup.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.DeliveredState" class="type-section">
+<h3>DeliveredState</h3>
+<p class="type-summary">Terminal state — order was successfully delivered to the customer. No further transitions are possible.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.DeliveringState" class="type-section">
+<h3>DeliveringState</h3>
+<p class="type-summary">The courier is actively delivering the order to the customer. Transitions to <code>Delivered</code> and stamps and stamps <code>SwiftDrop.Models.Order.DeliveredAt</code> /> with the current time. with the current time.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.IOrderState" class="type-section">
+<h3>IOrderState</h3>
+<p class="type-summary">Defines the contract for a single state in the order lifecycle (State Pattern). Each concrete state encapsulates the transition logic for that specific status, eliminating scattered if/else chains in service classes.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+<p>Transitions the given order to the next state by mutating <code>SwiftDrop.Models.Order.Status</code> /> and any other relevant fields (e.g. and any other relevant fields (e.g. <code>SwiftDrop.Models.Order.DeliveredAt</code> />). Has no effect when ). Has no effect when <code>SwiftDrop.Services.OrderStates.IOrderState.CanAdvance</code> /> is is <code>false</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>order</code></td><td>The order whose state should be advanced.</td></tr>
+</table>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+<p>Gets a value indicating whether the order can be advanced from this state. Terminal states (<code>SwiftDrop.Services.OrderStates.DeliveredState</code> />, , <code>SwiftDrop.Services.OrderStates.CanceledState</code> />) return ) return <code>false</code>. .</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+<p>Gets the string status identifier stored in the database for this state.</p>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.OrderStateFactory" class="type-section">
+<h3>OrderStateFactory</h3>
+<p class="type-summary">Creates the correct <code>SwiftDrop.Services.OrderStates.IOrderState</code> /> instance for a given status string. Acts as the entry point to the State Pattern — callers never instantiate state objects directly; they ask the factory and work through the instance for a given status string. Acts as the entry point to the State Pattern — callers never instantiate state objects directly; they ask the factory and work through the <code>SwiftDrop.Services.OrderStates.IOrderState</code> /> interface. interface.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>GetState</code></h4>
+<p>Returns the <code>SwiftDrop.Services.OrderStates.IOrderState</code> /> that corresponds to that corresponds to <code>status</code>. .</p>
+<table class="params"><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td><code>status</code></td><td>The order status string as stored in the database (e.g. <code>"Pending"</code>, , <code>"Delivered"</code>). ).</td></tr>
+</table>
+<p><strong>Returns:</strong> The matching state object.</p>
+<p><strong>Throws</strong> <code>System.InvalidOperationException</code>: Thrown when <code>status</code> does not match any known state. does not match any known state.</p>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.PaidState" class="type-section">
+<h3>PaidState</h3>
+<p class="type-summary">Payment was successfully collected. Functionally identical to <code>SwiftDrop.Services.OrderStates.PendingState</code> /> from the manager's perspective — both advance to from the manager's perspective — both advance to <code>PickupsInProgress</code>. .</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.PendingState" class="type-section">
+<h3>PendingState</h3>
+<p class="type-summary">Order has been placed but payment has not yet been confirmed. Transitions to <code>PickupsInProgress</code> when a manager accepts the order. when a manager accepts the order.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.Services.OrderStates.PickupsInProgressState" class="type-section">
+<h3>PickupsInProgressState</h3>
+<p class="type-summary">Restaurant(s) are preparing the items. Manager advances to <code>CourierAssigned</code> once all sub-orders are ready for pickup. once all sub-orders are ready for pickup.</p>
+<div class="member">
+<h4><span class="badge method">method</span> <code>Advance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CanAdvance</code></h4>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>StatusName</code></h4>
+</div>
+</section><section id="SwiftDrop.ViewModels.AdminDashboardViewModel" class="type-section">
+<h3>AdminDashboardViewModel</h3>
+<p class="type-summary">View model for the admin dashboard. Contains platform-wide statistics and a snapshot of the most recent users.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ActiveRestaurants</code></h4>
+<p>Total number of restaurant records in the database.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DailyRevenue</code></h4>
+<p>Sum of all order totals created today, in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>TotalUsers</code></h4>
+<p>Total number of registered users on the platform.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Users</code></h4>
+<p>The 50 most recently registered users, shown in the admin user table.</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.CartViewModel" class="type-section">
+<h3>CartViewModel</h3>
+<p class="type-summary">View model for the cart summary page. Aggregates cart items with pre-calculated totals so the view requires no arithmetic.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CartItems</code></h4>
+<p>All items currently in the session cart.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveryCity</code></h4>
+<p>City pre-filled from the user's last order (optional).</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveryFee</code></h4>
+<p>Delivery fee in CZK calculated by the active <code>SwiftDrop.Services.IDeliveryCostStrategy</code> />..</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveryStreet</code></h4>
+<p>Street pre-filled from the user's last order (optional).</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>DeliveryZipCode</code></h4>
+<p>ZIP code pre-filled from the user's last order (optional).</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Subtotal</code></h4>
+<p>Sum of (unit price × quantity) for all items, in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Total</code></h4>
+<p>Grand total: <code>SwiftDrop.ViewModels.CartViewModel.Subtotal</code> /> + + <code>SwiftDrop.ViewModels.CartViewModel.DeliveryFee</code> />..</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.CourierDashboardViewModel" class="type-section">
+<h3>CourierDashboardViewModel</h3>
+<p class="type-summary">View model for the courier dashboard. Bundles active delivery statistics with the ordered list of map markers produced by the route optimization algorithm in <code>SwiftDrop.Services.CourierService</code> />. .</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ActiveJobs</code></h4>
+<p>Number of orders currently in <code>CourierAssigned</code> or or <code>Delivering</code> state. state.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>AvailableOrders</code></h4>
+<p>Orders available for pickup or currently being delivered.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>CurrentEarnings</code></h4>
+<p>Courier's earnings for today (80 % of today's delivered order fees), in CZK.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>MapMarkers</code></h4>
+<p>Map markers for all active orders, sorted by the optimized pickup route. Each marker's <code>SwiftDrop.ViewModels.MapMarkerDto.RouteOrder</code> /> indicates the suggested stop sequence. indicates the suggested stop sequence.</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.LoginViewModel" class="type-section">
+<h3>LoginViewModel</h3>
+<p class="type-summary">View model for the login form.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Email</code></h4>
+<p>User's registered email address.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Password</code></h4>
+<p>Plain-text password submitted by the user (never persisted).</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.ManagerDashboardViewModel" class="type-section">
+<h3>ManagerDashboardViewModel</h3>
+<p class="type-summary">View model for the restaurant manager dashboard. Aggregates orders awaiting manager action and the current menu item listing.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>ActiveItems</code></h4>
+<p>Number of menu items shown in the active items table.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>MenuItems</code></h4>
+<p>The 50 most recently added menu items.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Orders</code></h4>
+<p>Orders requiring manager attention, ordered newest first.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>PendingOrders</code></h4>
+<p>Count of orders in <code>Pending</code>, , <code>Paid</code> or or <code>PickupsInProgress</code> state. state.</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.MapMarkerDto" class="type-section">
+<h3>MapMarkerDto</h3>
+<p class="type-summary">Data transfer object representing a single point on the courier's delivery map. Markers are generated by <code>SwiftDrop.Services.CourierService</code> /> and passed to the Leaflet.js map on the courier dashboard. and passed to the Leaflet.js map on the courier dashboard.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Lat</code></h4>
+<p>WGS-84 latitude.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Lng</code></h4>
+<p>WGS-84 longitude.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>OrderId</code></h4>
+<p>Primary key of the order this marker belongs to.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>RouteOrder</code></h4>
+<p>Suggested stop sequence produced by the route optimization algorithm. Lower numbers should be visited first.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Title</code></h4>
+<p>Label shown in the map tooltip (e.g. "[Pickup #5] Pizza Palace").</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Type</code></h4>
+<p>Marker category: <code>"Pickup"</code> for a restaurant, for a restaurant, <code>"Delivery"</code> for the customer. for the customer.</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.MyOrdersViewModel" class="type-section">
+<h3>MyOrdersViewModel</h3>
+<p class="type-summary">View model for the customer's order history page.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Orders</code></h4>
+<p>All orders placed by the logged-in customer, newest first.</p>
+</div>
+</section><section id="SwiftDrop.ViewModels.RegisterViewModel" class="type-section">
+<h3>RegisterViewModel</h3>
+<p class="type-summary">View model for the new account registration form.</p>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Email</code></h4>
+<p>Email address that will be used as the login identifier.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>FirstName</code></h4>
+<p>User's first name.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>LastName</code></h4>
+<p>User's last name.</p>
+</div>
+<div class="member">
+<h4><span class="badge property">property</span> <code>Password</code></h4>
+<p>Plain-text password (minimum 6 characters); hashed with BCrypt before storage.</p>
+</div>
+</section>
+</main>
+</body>
+</html>

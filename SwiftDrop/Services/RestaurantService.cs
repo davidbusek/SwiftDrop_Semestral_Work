@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,38 +9,55 @@ using SwiftDrop.Models;
 
 namespace SwiftDrop.Services
 {
+    /// <summary>
+    /// EF Core + in-memory cache implementation of <see cref="IRestaurantService"/>.
+    /// Frequently read lists are cached for 15 minutes (Cache-Aside Pattern) and
+    /// invalidated on any write operation.
+    /// </summary>
     public class RestaurantService : IRestaurantService
     {
         private readonly SwiftDropDbContext _context;
         private readonly IMemoryCache _cache;
         private const string CacheKeyActiveRestaurants = "active_restaurants_list";
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="RestaurantService"/>.
+        /// </summary>
+        /// <param name="context">Database context.</param>
+        /// <param name="cache">In-memory cache for reducing DB round-trips.</param>
         public RestaurantService(SwiftDropDbContext context, IMemoryCache cache)
         {
             _context = context;
             _cache = cache;
         }
 
+        /// <summary>
+        /// Returns all active restaurants. Result is cached for 15 minutes.
+        /// </summary>
         public async Task<IEnumerable<Restaurant>> GetAllActiveRestaurantsAsync()
         {
-            // Performance optimization: Check if active restaurants are already in the memory cache
             if (!_cache.TryGetValue(CacheKeyActiveRestaurants, out IEnumerable<Restaurant>? cachedRestaurants))
             {
-                // If data is not in cache, fetch it from the database
-                cachedRestaurants = await _context.Restaurants.Where(r => r.IsActive.GetValueOrDefault()).ToListAsync();
+                cachedRestaurants = await _context.Restaurants
+                    .Where(r => r.IsActive.GetValueOrDefault())
+                    .ToListAsync();
 
-                // Set cache expiration time
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
-
-                _cache.Set(CacheKeyActiveRestaurants, cachedRestaurants, cacheEntryOptions);
+                _cache.Set(CacheKeyActiveRestaurants, cachedRestaurants,
+                    new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(15)));
             }
 
             return cachedRestaurants ?? Array.Empty<Restaurant>();
         }
 
-        public async Task<Restaurant?> GetByIdAsync(int id) => await _context.Restaurants.FindAsync(id);
+        /// <inheritdoc/>
+        public async Task<Restaurant?> GetByIdAsync(int id) =>
+            await _context.Restaurants.FindAsync(id);
 
+        /// <summary>
+        /// Returns all menu categories with their items for the given restaurant.
+        /// Result is cached per restaurant for 15 minutes.
+        /// </summary>
+        /// <param name="restaurantId">Primary key of the restaurant.</param>
         public async Task<IEnumerable<Category>> GetCategoriesWithMenuItemsAsync(int restaurantId)
         {
             var cacheKey = $"restaurant_categories_{restaurantId}";
@@ -58,6 +75,7 @@ namespace SwiftDrop.Services
             return cachedCategories ?? Array.Empty<Category>();
         }
 
+        /// <inheritdoc/>
         public async Task CreateAsync(Restaurant restaurant)
         {
             _context.Add(restaurant);
@@ -65,6 +83,7 @@ namespace SwiftDrop.Services
             InvalidateCache();
         }
 
+        /// <inheritdoc/>
         public async Task UpdateAsync(Restaurant restaurant)
         {
             _context.Update(restaurant);
@@ -72,6 +91,7 @@ namespace SwiftDrop.Services
             InvalidateCache();
         }
 
+        /// <inheritdoc/>
         public async Task DeleteAsync(int id)
         {
             var res = await _context.Restaurants.FindAsync(id);
@@ -83,15 +103,11 @@ namespace SwiftDrop.Services
             }
         }
 
-        public async Task<IEnumerable<Restaurant>> GetAllAsync()
-        {
-            return await _context.Restaurants.ToListAsync();
-        }
+        /// <inheritdoc/>
+        public async Task<IEnumerable<Restaurant>> GetAllAsync() =>
+            await _context.Restaurants.ToListAsync();
 
-        private void InvalidateCache()
-        {
-            // This invalidates the primary cache when the Restaurants DB table changes
-            _cache.Remove(CacheKeyActiveRestaurants);
-        }
+        /// <summary>Removes the restaurant list cache entry so the next read fetches fresh data.</summary>
+        private void InvalidateCache() => _cache.Remove(CacheKeyActiveRestaurants);
     }
 }

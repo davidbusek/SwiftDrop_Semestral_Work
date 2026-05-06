@@ -1,26 +1,39 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using SwiftDrop.Data;
 using SwiftDrop.Models;
-using SwiftDrop.ViewModels; 
+using SwiftDrop.ViewModels;
 
 namespace SwiftDrop.Controllers
 {
+    /// <summary>
+    /// Handles user registration, login and logout using cookie-based authentication.
+    /// Passwords are hashed with BCrypt before storage.
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly SwiftDropDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="AccountController"/>.
+        /// </summary>
+        /// <param name="context">Database context.</param>
         public AccountController(SwiftDropDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>Displays the login form.</summary>
         [HttpGet]
         public IActionResult Login() => View(new LoginViewModel());
 
+        /// <summary>
+        /// Authenticates the user. On success, issues a cookie and redirects to the home page.
+        /// </summary>
+        /// <param name="model">Login credentials.</param>
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -48,13 +61,17 @@ namespace SwiftDrop.Controllers
             return View(model);
         }
 
+        /// <summary>Displays the registration form.</summary>
         [HttpGet]
         public IActionResult Register() => View(new RegisterViewModel());
 
+        /// <summary>
+        /// Creates a new customer account. Rejects duplicate email addresses.
+        /// </summary>
+        /// <param name="model">Registration data.</param>
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-         
             if (!ModelState.IsValid) return View(model);
 
             if (await _context.Users.AnyAsync(u => u.Email == model.Email))
@@ -80,6 +97,7 @@ namespace SwiftDrop.Controllers
             return RedirectToAction(nameof(Login));
         }
 
+        /// <summary>Signs the user out and redirects to the home page.</summary>
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

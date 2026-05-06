@@ -9,24 +9,59 @@ using System.Collections.Generic;
 
 namespace SwiftDrop.Services
 {
+    /// <summary>
+    /// Handles order creation, payment processing and order history retrieval.
+    /// </summary>
     public interface IOrderService
     {
-        Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee, string street, string city, string zipCode);
+        /// <summary>
+        /// Creates a complete order from the current cart: persists a delivery address
+        /// (geocoded via Nominatim), the order record, sub-orders per restaurant,
+        /// and all order items.
+        /// </summary>
+        /// <param name="userEmail">Email of the authenticated customer.</param>
+        /// <param name="cartItems">Items to be ordered.</param>
+        /// <param name="deliveryFee">Pre-calculated delivery fee in CZK.</param>
+        /// <param name="street">Delivery street.</param>
+        /// <param name="city">Delivery city.</param>
+        /// <param name="zipCode">Delivery ZIP code.</param>
+        /// <returns>The newly created <see cref="Order"/>.</returns>
+        Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee,
+            string street, string city, string zipCode);
+
+        /// <summary>
+        /// Simulates a card payment with a 90 % success rate.
+        /// Persists a <see cref="Payment"/> record and updates the order status to
+        /// <c>Paid</c> or <c>Canceled</c> accordingly.
+        /// </summary>
+        /// <param name="orderId">The order to pay for.</param>
+        /// <param name="amount">Amount charged in CZK.</param>
+        /// <returns><c>true</c> if payment succeeded; <c>false</c> otherwise.</returns>
         Task<bool> MockPaymentProcessAsync(int orderId, decimal amount);
+
+        /// <summary>Returns all orders placed by the user with the given email, newest first.</summary>
+        /// <param name="userEmail">Email of the user whose orders to retrieve.</param>
         Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail);
     }
 
+    /// <summary>EF Core implementation of <see cref="IOrderService"/>.</summary>
     public class OrderService : IOrderService
     {
         private readonly SwiftDropDbContext _context;
         private readonly IHttpClientFactory _httpClientFactory;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="OrderService"/>.
+        /// </summary>
+        /// <param name="context">Database context.</param>
+        /// <param name="httpClientFactory">Factory used to call the Nominatim geocoding API.</param>
         public OrderService(SwiftDropDbContext context, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _httpClientFactory = httpClientFactory;
         }
 
+        /// <inheritdoc/>
         public async Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
@@ -38,11 +73,15 @@ namespace SwiftDrop.Services
                 .ToListAsync();
         }
 
-        public async Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems, decimal deliveryFee, string street, string city, string zipCode)
+        /// <inheritdoc/>
+        public async Task<Order> ProcessCheckoutAsync(string userEmail, List<CartItem> cartItems,
+            decimal deliveryFee, string street, string city, string zipCode)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
-            if (user == null)
-                throw new Exception("User not found.");
+            if (user == null) throw new Exception("User not found.");
+
+            // Start geocoding immediately — runs concurrently with the DB operations below
+            var geocodeTask = GeocodeAddressAsync(street, city);
 
             var itemPrice = cartItems.Sum(i => i.Price * i.Quantity);
             var totalPrice = itemPrice + deliveryFee;
@@ -54,10 +93,6 @@ namespace SwiftDrop.Services
                 City = city,
                 ZipCode = zipCode
             };
-
-            var coords = await GeocodeAddressAsync(street, city);
-            deliveryAddress.Latitude = coords?.Lat;
-            deliveryAddress.Longitude = coords?.Lng;
 
             _context.Addresses.Add(deliveryAddress);
             await _context.SaveChangesAsync();
@@ -75,17 +110,16 @@ namespace SwiftDrop.Services
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-            
-            var groupedItems = cartItems.GroupBy(i => i.RestaurantId);
-            foreach(var group in groupedItems) 
+
+            foreach (var group in cartItems.GroupBy(i => i.RestaurantId))
             {
                 var subOrder = new Suborder
                 {
                     OrderId = order.Id,
                     RestaurantId = group.Key,
-                    Status = "Pending",
+                    Status = "Pending"
                 };
-                
+
                 _context.Suborders.Add(subOrder);
                 await _context.SaveChangesAsync();
 
@@ -103,9 +137,28 @@ namespace SwiftDrop.Services
 
             await _context.SaveChangesAsync();
 
+            // Geocoding finishes here (usually already done by the time DB work completes)
+            var coords = await geocodeTask;
+            if (coords.HasValue)
+            {
+                deliveryAddress.Latitude = coords.Value.Lat;
+                deliveryAddress.Longitude = coords.Value.Lng;
+            }
+            else
+            {
+                // Fallback coordinates (Prague center) if geocoding fails or address is invalid
+                deliveryAddress.Latitude = 50.08804m;
+                deliveryAddress.Longitude = 14.42076m;
+            }
+            await _context.SaveChangesAsync();
+
             return order;
         }
 
+        /// <summary>
+        /// Geocodes a Czech address using the OpenStreetMap Nominatim API.
+        /// Returns <c>null</c> silently on any error — geocoding failure is non-fatal.
+        /// </summary>
         private async Task<(decimal Lat, decimal Lng)?> GeocodeAddressAsync(string street, string city)
         {
             try
@@ -114,9 +167,10 @@ namespace SwiftDrop.Services
                 var url = $"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1";
 
                 var client = _httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("SwiftDrop/1.0");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("SwiftDrop_UniversityProject/1.0 (student@sssvt.cz)");
 
-                var json = await client.GetStringAsync(url);
+                using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(5));
+                var json = await client.GetStringAsync(url, cts.Token);
                 var doc = System.Text.Json.JsonDocument.Parse(json);
                 var root = doc.RootElement;
 
@@ -133,34 +187,27 @@ namespace SwiftDrop.Services
             return null;
         }
 
+        /// <inheritdoc/>
         public async Task<bool> MockPaymentProcessAsync(int orderId, decimal amount)
         {
-            // Simulate payment delay
             await Task.Delay(1000);
 
-            // Pseudo-random payment success (90% success rate)
-            var rng = new Random();
-            bool paymentSuccess = rng.Next(0, 100) > 10;
+            bool paymentSuccess = new Random().Next(0, 100) > 10;
 
-            var payment = new Payment
+            _context.Payments.Add(new Payment
             {
                 OrderId = orderId,
                 PaymentMethod = "CardOnline",
                 PaymentStatus = paymentSuccess ? "Paid" : "Unpaid",
                 Amount = amount,
                 CreatedAt = DateTime.Now
-            };
-
-            _context.Payments.Add(payment);
+            });
 
             var order = await _context.Orders.FindAsync(orderId);
             if (order != null)
-            {
                 order.Status = paymentSuccess ? "Paid" : "Canceled";
-            }
 
             await _context.SaveChangesAsync();
-
             return paymentSuccess;
         }
     }

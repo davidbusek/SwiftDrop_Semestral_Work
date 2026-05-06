@@ -1,0 +1,40 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "SwiftDrop/**/*.csproj" ],
+          "src": "../"
+        }
+      ],
+      "dest": "api",
+      "includePrivateMembers": false,
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "api/**.yml", "api/index.md" ]
+      },
+      {
+        "files": [ "*.md" ],
+        "src": "../",
+        "dest": "articles"
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "images/**" ]
+      }
+    ],
+    "output": "docfx_output",
+    "template": [ "default" ],
+    "globalMetadata": {
+      "_appTitle": "SwiftDrop API Documentation",
+      "_appName": "SwiftDrop",
+      "_appFooter": "SwiftDrop — Food Delivery Platform"
+    }
+  }
+}
