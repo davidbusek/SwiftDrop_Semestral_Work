@@ -196,7 +196,12 @@
 
         @* ── RESTAURANTS TAB ── *@
         <div class="tab-pane fade" id="restaurants" role="tabpanel">
-            <h4 class="text-danger text-uppercase mb-3">Restaurants</h4>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="text-danger text-uppercase mb-0">Restaurants</h4>
+                <a asp-controller="Admin" asp-action="CreateRestaurant" class="btn cyber-btn btn-sm text-uppercase">
+                    <i class="bi bi-plus-circle-fill me-1"></i>Add Restaurant
+                </a>
+            </div>
             <div class="cyber-card p-4 border-danger">
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
@@ -247,9 +252,14 @@
         <div class="tab-pane fade" id="foods" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="text-danger text-uppercase mb-0">Menu Items</h4>
-                <a asp-controller="Admin" asp-action="CreateMenuItem" class="btn cyber-btn btn-sm text-uppercase">
-                    <i class="bi bi-plus-circle-fill me-1"></i>Add Food Item
-                </a>
+                <div class="d-flex gap-2">
+                    <a asp-controller="Admin" asp-action="CreateCategory" class="btn btn-outline-danger btn-sm text-uppercase">
+                        <i class="bi bi-tag-fill me-1"></i>Add Category
+                    </a>
+                    <a asp-controller="Admin" asp-action="CreateMenuItem" class="btn cyber-btn btn-sm text-uppercase">
+                        <i class="bi bi-plus-circle-fill me-1"></i>Add Food Item
+                    </a>
+                </div>
             </div>
             <div class="cyber-card p-4 border-danger">
                 <div class="table-responsive">

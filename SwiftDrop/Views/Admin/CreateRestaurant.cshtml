@@ -1,0 +1,123 @@
+@model SwiftDrop.ViewModels.CreateRestaurantViewModel
+@{
+    ViewData["Title"] = "Create Restaurant";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5" style="max-width: 700px;">
+    <h2 class="text-danger mb-4 text-uppercase fw-bold">
+        <i class="bi bi-shop me-2"></i>Create Restaurant
+    </h2>
+
+    <form asp-controller="Admin" asp-action="CreateRestaurant" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+        @* ── Restaurant Details ── *@
+        <div class="cyber-card p-4 border-danger mb-4">
+            <h5 class="text-danger text-uppercase fw-bold mb-3"><i class="bi bi-info-circle me-1"></i>Restaurant Details</h5>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label text-white text-uppercase small fw-bold">Name</label>
+                <input asp-for="Name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Pizza Planet" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label text-white text-uppercase small fw-bold">Description (optional)</label>
+                <textarea asp-for="Description" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Short description…"></textarea>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label asp-for="ContactPhone" class="form-label text-white text-uppercase small fw-bold">Phone (optional)</label>
+                    <input asp-for="ContactPhone" class="form-control bg-dark text-white border-secondary" placeholder="+420 777 000 000" />
+                </div>
+                <div class="col-sm-6">
+                    <label asp-for="ContactEmail" class="form-label text-white text-uppercase small fw-bold">Email (optional)</label>
+                    <input asp-for="ContactEmail" class="form-control bg-dark text-white border-secondary" placeholder="info@restaurant.cz" />
+                    <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label asp-for="EstimatedPrepTimeMinutes" class="form-label text-white text-uppercase small fw-bold">Prep Time (min)</label>
+                    <input asp-for="EstimatedPrepTimeMinutes" type="number" min="1" max="300" class="form-control bg-dark text-white border-secondary" placeholder="30" />
+                    <span asp-validation-for="EstimatedPrepTimeMinutes" class="text-danger small"></span>
+                </div>
+                <div class="col-sm-6">
+                    <label asp-for="MinimumOrderAmount" class="form-label text-white text-uppercase small fw-bold">Min. Order (Kč)</label>
+                    <input asp-for="MinimumOrderAmount" type="number" step="0.01" min="0" class="form-control bg-dark text-white border-secondary" placeholder="0.00" />
+                    <span asp-validation-for="MinimumOrderAmount" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-0">
+                <label asp-for="LogoUrl" class="form-label text-white text-uppercase small fw-bold">Logo URL (optional)</label>
+                <input asp-for="LogoUrl" class="form-control bg-dark text-white border-secondary" placeholder="https://…" />
+            </div>
+        </div>
+
+        @* ── Address ── *@
+        <div class="cyber-card p-4 border-danger mb-4">
+            <h5 class="text-danger text-uppercase fw-bold mb-3"><i class="bi bi-geo-alt me-1"></i>Restaurant Address</h5>
+
+            <div class="mb-3">
+                <label asp-for="Street" class="form-label text-white text-uppercase small fw-bold">Street</label>
+                <input asp-for="Street" class="form-control bg-dark text-white border-secondary" placeholder="Náměstí Republiky 1" />
+                <span asp-validation-for="Street" class="text-danger small"></span>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-sm-8">
+                    <label asp-for="City" class="form-label text-white text-uppercase small fw-bold">City</label>
+                    <input asp-for="City" class="form-control bg-dark text-white border-secondary" placeholder="Plzeň" />
+                    <span asp-validation-for="City" class="text-danger small"></span>
+                </div>
+                <div class="col-sm-4">
+                    <label asp-for="ZipCode" class="form-label text-white text-uppercase small fw-bold">ZIP Code</label>
+                    <input asp-for="ZipCode" class="form-control bg-dark text-white border-secondary" placeholder="30100" />
+                    <span asp-validation-for="ZipCode" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+
+        @* ── Manager Assignment ── *@
+        <div class="cyber-card p-4 border-danger mb-4">
+            <h5 class="text-danger text-uppercase fw-bold mb-3"><i class="bi bi-person-badge me-1"></i>Assign Manager</h5>
+
+            @if (Model.AvailableManagers.Count == 0)
+            {
+                <div class="text-warning small">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    No restaurant managers exist yet.
+                    <a asp-controller="Admin" asp-action="CreateManager" class="text-neon">Create one first.</a>
+                </div>
+            }
+            else
+            {
+                <label asp-for="ManagerId" class="form-label text-white text-uppercase small fw-bold">Manager</label>
+                <select asp-for="ManagerId" class="form-select bg-dark text-white border-secondary">
+                    <option value="">— select a manager —</option>
+                    @foreach (var m in Model.AvailableManagers)
+                    {
+                        <option value="@m.Id">@m.FirstName @m.LastName (@m.Email)</option>
+                    }
+                </select>
+                <span asp-validation-for="ManagerId" class="text-danger small"></span>
+            }
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="btn cyber-btn text-uppercase fw-bold px-4"
+                    @(Model.AvailableManagers.Count == 0 ? "disabled" : "")>
+                <i class="bi bi-check-circle-fill me-1"></i>Create Restaurant
+            </button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary text-uppercase fw-bold px-4">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

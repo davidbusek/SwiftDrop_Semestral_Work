@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SwiftDrop.Data;
+using SwiftDrop.Models;
 using SwiftDrop.Services.OrderStates;
 using SwiftDrop.ViewModels;
 
@@ -29,6 +31,31 @@ namespace SwiftDrop.Services
         /// </summary>
         /// <param name="id">Primary key of the menu item to delete.</param>
         Task DeleteMenuItemAsync(int id);
+
+        /// <summary>
+        /// Returns all restaurants associated with the manager identified by <paramref name="managerId"/>.
+        /// The association is resolved via <c>Address.UserId</c>.
+        /// </summary>
+        /// <param name="managerId">Primary key of the <c>RestaurantManager</c> user.</param>
+        Task<List<Restaurant>> GetManagerRestaurantsAsync(int managerId);
+
+        /// <summary>
+        /// Returns all categories belonging to restaurants managed by <paramref name="managerId"/>.
+        /// </summary>
+        /// <param name="managerId">Primary key of the <c>RestaurantManager</c> user.</param>
+        Task<List<Category>> GetManagerCategoriesAsync(int managerId);
+
+        /// <summary>
+        /// Creates a new menu category under the restaurant specified in <paramref name="model"/>.
+        /// </summary>
+        /// <param name="model">Validated form data for the new category.</param>
+        Task CreateCategoryAsync(CreateCategoryViewModel model);
+
+        /// <summary>
+        /// Creates a new menu item under the category specified in <paramref name="model"/>.
+        /// </summary>
+        /// <param name="model">Validated form data for the new menu item.</param>
+        Task CreateMenuItemAsync(CreateMenuItemViewModel model);
     }
 
     /// <summary>EF Core implementation of <see cref="IManagerService"/>.</summary>
@@ -88,6 +115,59 @@ namespace SwiftDrop.Services
                 _context.Menuitems.Remove(item);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<Restaurant>> GetManagerRestaurantsAsync(int managerId)
+        {
+            return await _context.Addresses
+                .Where(a => a.UserId == managerId)
+                .SelectMany(a => a.Restaurants)
+                .ToListAsync();
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<Category>> GetManagerCategoriesAsync(int managerId)
+        {
+            return await _context.Addresses
+                .Where(a => a.UserId == managerId)
+                .SelectMany(a => a.Restaurants)
+                .SelectMany(r => r.Categories)
+                .Include(c => c.Restaurant)
+                .ToListAsync();
+        }
+
+        /// <inheritdoc/>
+        public async Task CreateCategoryAsync(CreateCategoryViewModel model)
+        {
+            var category = new Category
+            {
+                RestaurantId = model.RestaurantId,
+                Name = model.Name,
+                DisplayOrder = model.DisplayOrder ?? 0
+            };
+
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+        }
+
+        /// <inheritdoc/>
+        public async Task CreateMenuItemAsync(CreateMenuItemViewModel model)
+        {
+            var item = new Menuitem
+            {
+                CategoryId = model.CategoryId,
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                Allergens = model.Allergens,
+                WeightOrVolume = model.WeightOrVolume,
+                ImageUrl = model.ImageUrl,
+                IsAvailable = true
+            };
+
+            _context.Menuitems.Add(item);
+            await _context.SaveChangesAsync();
         }
     }
 }

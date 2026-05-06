@@ -7,6 +7,13 @@
 <div class="container my-5">
     <h2 class="text-warning mb-4 text-uppercase fw-bold"><i class="bi bi-shop me-2"></i>Manager Dashboard</h2>
 
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert border-0 mb-4" style="background:rgba(57,255,20,0.1); color:#39ff14; border-left:3px solid #39ff14 !important;">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+        </div>
+    }
+
     <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="cyber-card p-4 border-warning">
@@ -71,7 +78,17 @@
     </div>
 
     <!-- Active Menu Items Management -->
-    <h4 class="text-warning border-bottom border-warning pb-2 text-uppercase mb-3">Menu Directory</h4>
+    <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-2 mb-3">
+        <h4 class="text-warning text-uppercase mb-0">Menu Directory</h4>
+        <div class="d-flex gap-2">
+            <a asp-controller="Manager" asp-action="CreateCategory" class="btn btn-warning btn-sm text-dark text-uppercase fw-bold">
+                <i class="bi bi-tag-fill me-1"></i>Add Category
+            </a>
+            <a asp-controller="Manager" asp-action="CreateMenuItem" class="btn btn-outline-warning btn-sm text-uppercase fw-bold">
+                <i class="bi bi-plus-circle-fill me-1"></i>Add Food Item
+            </a>
+        </div>
+    </div>
     <div class="cyber-card p-4 border-warning">
         <div class="table-responsive">
             <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">

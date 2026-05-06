@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -138,6 +139,84 @@ namespace SwiftDrop.Controllers
         public async Task<IActionResult> DeleteRestaurant(int id)
         {
             await _adminService.DeleteRestaurantAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        // ── Categories ───────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Displays the form for creating a new menu category.
+        /// Populates the restaurant drop-down with all restaurants.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateCategory()
+        {
+            var model = new CreateCategoryViewModel
+            {
+                AvailableRestaurants = await _context.Restaurants
+                    .OrderBy(r => r.Name).ToListAsync()
+            };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Processes the create-category form.
+        /// Redirects back to the dashboard on success; re-renders the form on validation failure.
+        /// </summary>
+        /// <param name="model">Validated form data.</param>
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory(CreateCategoryViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.AvailableRestaurants = await _context.Restaurants
+                    .OrderBy(r => r.Name).ToListAsync();
+                return View(model);
+            }
+
+            await _adminService.CreateCategoryAsync(model);
+            TempData["Success"] = $"Category \"{model.Name}\" created successfully.";
+            return RedirectToAction("Index");
+        }
+
+        // ── Restaurants (create) ─────────────────────────────────────────────────
+
+        /// <summary>
+        /// Displays the form for creating a new restaurant.
+        /// Populates the manager drop-down with all <c>RestaurantManager</c> users.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CreateRestaurant()
+        {
+            var model = new CreateRestaurantViewModel
+            {
+                AvailableManagers = await _context.Users
+                    .Where(u => u.Role == "RestaurantManager")
+                    .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
+                    .ToListAsync()
+            };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Processes the create-restaurant form.
+        /// Redirects back to the dashboard on success; re-renders the form on validation failure.
+        /// </summary>
+        /// <param name="model">Validated form data.</param>
+        [HttpPost]
+        public async Task<IActionResult> CreateRestaurant(CreateRestaurantViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.AvailableManagers = await _context.Users
+                    .Where(u => u.Role == "RestaurantManager")
+                    .OrderBy(u => u.LastName).ThenBy(u => u.FirstName)
+                    .ToListAsync();
+                return View(model);
+            }
+
+            await _adminService.CreateRestaurantAsync(model);
+            TempData["Success"] = $"Restaurant \"{model.Name}\" created successfully.";
             return RedirectToAction("Index");
         }
 

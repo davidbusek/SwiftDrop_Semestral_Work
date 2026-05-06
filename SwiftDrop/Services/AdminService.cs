@@ -65,6 +65,20 @@ namespace SwiftDrop.Services
         /// </summary>
         /// <param name="id">Primary key of the order to advance.</param>
         Task AdvanceOrderStateAsync(int id);
+
+        /// <summary>
+        /// Creates a new restaurant together with its physical address.
+        /// The address <c>UserId</c> is set to <paramref name="model"/>.<see cref="CreateRestaurantViewModel.ManagerId"/>,
+        /// which is the schema's convention for linking a restaurant to its managing user.
+        /// </summary>
+        /// <param name="model">Validated form data for the new restaurant.</param>
+        Task CreateRestaurantAsync(CreateRestaurantViewModel model);
+
+        /// <summary>
+        /// Creates a new menu category under the restaurant specified in <paramref name="model"/>.
+        /// </summary>
+        /// <param name="model">Validated form data for the new category.</param>
+        Task CreateCategoryAsync(CreateCategoryViewModel model);
     }
 
     /// <summary>EF Core implementation of <see cref="IAdminService"/>.</summary>
@@ -198,6 +212,20 @@ namespace SwiftDrop.Services
         }
 
         /// <inheritdoc/>
+        public async Task CreateCategoryAsync(CreateCategoryViewModel model)
+        {
+            var category = new Category
+            {
+                RestaurantId = model.RestaurantId,
+                Name = model.Name,
+                DisplayOrder = model.DisplayOrder ?? 0
+            };
+
+            _context.Categories.Add(category);
+            await _context.SaveChangesAsync();
+        }
+
+        /// <inheritdoc/>
         public async Task AdvanceOrderStateAsync(int id)
         {
             var order = await _context.Orders.FindAsync(id);
@@ -208,6 +236,42 @@ namespace SwiftDrop.Services
                     state.Advance(order);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task CreateRestaurantAsync(CreateRestaurantViewModel model)
+        {
+            // Address.UserId = ManagerId is the schema's convention for associating
+            // a restaurant with its managing user (Restaurant → Address → User).
+            var address = new Address
+            {
+                Street = model.Street,
+                City = model.City,
+                ZipCode = model.ZipCode,
+                UserId = model.ManagerId
+            };
+
+            _context.Addresses.Add(address);
+            await _context.SaveChangesAsync();
+
+            var restaurant = new Restaurant
+            {
+                Name = model.Name,
+                Description = model.Description,
+                ContactPhone = model.ContactPhone,
+                ContactEmail = model.ContactEmail,
+                LogoUrl = model.LogoUrl,
+                EstimatedPrepTimeMinutes = model.EstimatedPrepTimeMinutes,
+                MinimumOrderAmount = model.MinimumOrderAmount,
+                AddressId = address.Id,
+                IsActive = true,
+                IsAcceptingOrders = true,
+                AverageRating = 0m,
+                ReviewCount = 0
+            };
+
+            _context.Restaurants.Add(restaurant);
+            await _context.SaveChangesAsync();
         }
     }
 }

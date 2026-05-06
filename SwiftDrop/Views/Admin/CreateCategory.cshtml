@@ -1,0 +1,64 @@
+@model SwiftDrop.ViewModels.CreateCategoryViewModel
+@{
+    ViewData["Title"] = "Create Category";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5" style="max-width: 550px;">
+    <h2 class="text-danger mb-4 text-uppercase fw-bold">
+        <i class="bi bi-tag-fill me-2"></i>Create Category
+    </h2>
+
+    <div class="cyber-card p-4 border-danger">
+        <form asp-controller="Admin" asp-action="CreateCategory" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+            <div class="mb-3">
+                <label asp-for="RestaurantId" class="form-label text-white text-uppercase small fw-bold">Restaurant</label>
+                @if (Model.AvailableRestaurants.Count == 0)
+                {
+                    <div class="text-warning small">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        No restaurants exist yet.
+                        <a asp-controller="Admin" asp-action="CreateRestaurant" class="text-neon">Create one first.</a>
+                    </div>
+                }
+                else
+                {
+                    <select asp-for="RestaurantId" class="form-select bg-dark text-white border-secondary">
+                        <option value="">— select a restaurant —</option>
+                        @foreach (var r in Model.AvailableRestaurants)
+                        {
+                            <option value="@r.Id">@r.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="RestaurantId" class="text-danger small"></span>
+                }
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label text-white text-uppercase small fw-bold">Category Name</label>
+                <input asp-for="Name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Burgers, Drinks, Desserts" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="DisplayOrder" class="form-label text-white text-uppercase small fw-bold">Display Order (optional)</label>
+                <input asp-for="DisplayOrder" type="number" min="0" class="form-control bg-dark text-white border-secondary" placeholder="0" />
+                <div class="form-text text-secondary small">Lower numbers appear first on the menu.</div>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn cyber-btn text-uppercase fw-bold px-4"
+                        @(Model.AvailableRestaurants.Count == 0 ? "disabled" : "")>
+                    <i class="bi bi-check-circle-fill me-1"></i>Create
+                </button>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary text-uppercase fw-bold px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
