@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -102,6 +103,126 @@ namespace SwiftDrop.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
+        }
+
+        // ── Profile ──────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Displays the authenticated user's profile page with an edit form
+        /// and a password change form.
+        /// </summary>
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            ViewBag.ChangePassword = new ChangePasswordViewModel();
+            return View(new EditProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Role = user.Role
+            });
+        }
+
+        /// <summary>
+        /// Updates the authenticated user's first name, last name and phone number.
+        /// Re-issues the authentication cookie so the navbar name updates immediately.
+        /// </summary>
+        /// <param name="model">Validated profile form data.</param>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UpdateProfile(EditProfileViewModel model)
+        {
+            // Remove server-side validation for read-only display fields
+            ModelState.Remove(nameof(EditProfileViewModel.Email));
+            ModelState.Remove(nameof(EditProfileViewModel.Role));
+
+            if (!ModelState.IsValid)
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email)!;
+                var u = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                model.Email = u?.Email ?? string.Empty;
+                model.Role = u?.Role ?? string.Empty;
+                ViewBag.ChangePassword = new ChangePasswordViewModel();
+                return View("Profile", model);
+            }
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+            await _context.SaveChangesAsync();
+
+            // Re-issue cookie so the navbar picks up the new name immediately
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.FirstName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("UserId", user.Id.ToString())
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+            TempData["ProfileSuccess"] = "Profile updated successfully.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        /// <summary>
+        /// Changes the authenticated user's password after verifying the current one.
+        /// </summary>
+        /// <param name="model">Validated password change form data.</param>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email)!;
+                var u = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                ViewBag.ChangePassword = model;
+                return View("Profile", new EditProfileViewModel
+                {
+                    FirstName = u?.FirstName ?? string.Empty,
+                    LastName = u?.LastName ?? string.Empty,
+                    PhoneNumber = u?.PhoneNumber,
+                    Email = u?.Email ?? string.Empty,
+                    Role = u?.Role ?? string.Empty
+                });
+            }
+
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.PasswordHash))
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), "Current password is incorrect.");
+                ViewBag.ChangePassword = model;
+                return View("Profile", new EditProfileViewModel
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    Email = user.Email,
+                    Role = user.Role
+                });
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            await _context.SaveChangesAsync();
+
+            TempData["PasswordSuccess"] = "Password changed successfully.";
+            return RedirectToAction(nameof(Profile));
         }
     }
 }

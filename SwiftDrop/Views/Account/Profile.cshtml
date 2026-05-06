@@ -1,0 +1,143 @@
+@model SwiftDrop.ViewModels.EditProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var changePasswordModel = ViewBag.ChangePassword as SwiftDrop.ViewModels.ChangePasswordViewModel
+                              ?? new SwiftDrop.ViewModels.ChangePasswordViewModel();
+}
+
+@section Styles {
+    <style>
+        .profile-section-title {
+            color: #0dcaf0;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(13, 202, 240, 0.3);
+            padding-bottom: .5rem;
+            margin-bottom: 1.25rem;
+        }
+        .form-label { color: rgba(255,255,255,.75); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+        .form-control, .form-control:focus {
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.15);
+            color: #fff;
+        }
+        .form-control:focus { border-color: #0dcaf0; box-shadow: 0 0 0 .2rem rgba(13,202,240,.15); }
+        .form-control:disabled, .form-control[readonly] {
+            background: rgba(255,255,255,.03);
+            color: rgba(255,255,255,.4);
+            cursor: not-allowed;
+        }
+        .badge-role {
+            font-size: .7rem;
+            letter-spacing: .08em;
+            padding: .35em .7em;
+        }
+    </style>
+}
+
+<div class="container my-5" style="max-width: 720px;">
+    <h2 class="text-info mb-4 text-uppercase fw-bold"><i class="bi bi-person-gear me-2"></i>My Profile</h2>
+
+    @if (TempData["ProfileSuccess"] != null)
+    {
+        <div class="alert border-0 mb-4" style="background:rgba(13,202,240,.1); color:#0dcaf0; border-left:3px solid #0dcaf0 !important;">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["ProfileSuccess"]
+        </div>
+    }
+    @if (TempData["PasswordSuccess"] != null)
+    {
+        <div class="alert border-0 mb-4" style="background:rgba(57,255,20,.1); color:#39ff14; border-left:3px solid #39ff14 !important;">
+            <i class="bi bi-shield-check me-2"></i>@TempData["PasswordSuccess"]
+        </div>
+    }
+
+    <!-- ── Basic Info ─────────────────────────────────────────────────────── -->
+    <div class="cyber-card p-4 border-info mb-4">
+        <h5 class="profile-section-title"><i class="bi bi-person-lines-fill me-2"></i>Personal Information</h5>
+
+        <form method="post" asp-controller="Account" asp-action="UpdateProfile">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone Number <span class="opacity-50">(optional)</span></label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="+420 …" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input value="@Model.Email" class="form-control" disabled />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Role</label>
+                    <div class="mt-1">
+                        <span class="badge bg-info text-dark badge-role text-uppercase">@Model.Role</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-info text-dark fw-bold text-uppercase px-4">
+                    <i class="bi bi-floppy-fill me-1"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── Change Password ───────────────────────────────────────────────── -->
+    <div class="cyber-card p-4 border-info">
+        <h5 class="profile-section-title"><i class="bi bi-key-fill me-2"></i>Change Password</h5>
+
+        <form method="post" asp-controller="Account" asp-action="ChangePassword">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" name="CurrentPassword" value="@changePasswordModel.CurrentPassword"
+                           class="form-control @(ViewData.ModelState["CurrentPassword"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           autocomplete="current-password" />
+                    <span class="text-danger small">
+                        @ViewData.ModelState["CurrentPassword"]?.Errors.FirstOrDefault()?.ErrorMessage
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">New Password</label>
+                    <input type="password" name="NewPassword"
+                           class="form-control @(ViewData.ModelState["NewPassword"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           autocomplete="new-password" />
+                    <span class="text-danger small">
+                        @ViewData.ModelState["NewPassword"]?.Errors.FirstOrDefault()?.ErrorMessage
+                    </span>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" name="ConfirmPassword"
+                           class="form-control @(ViewData.ModelState["ConfirmPassword"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           autocomplete="new-password" />
+                    <span class="text-danger small">
+                        @ViewData.ModelState["ConfirmPassword"]?.Errors.FirstOrDefault()?.ErrorMessage
+                    </span>
+                </div>
+            </div>
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-outline-info fw-bold text-uppercase px-4">
+                    <i class="bi bi-lock-fill me-1"></i> Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -80,15 +80,14 @@ namespace SwiftDrop.Services
         /// <inheritdoc/>
         public async Task<ManagerDashboardViewModel> GetDashboardDataAsync(int managerId)
         {
-            // Navigate directly through the FK chain so EF Core generates JOINs
-            // instead of a local-collection Contains(), which Pomelo cannot translate.
-
-            // Orders that contain at least one sub-order whose restaurant is owned by this manager
-            var pendingOrdersList = await _context.Orders
-                .Where(o => (o.Status == "Pending" || o.Status == "Paid" || o.Status == "PickupsInProgress")
-                         && o.Suborders.Any(s => s.Restaurant.Address.UserId == managerId))
-                .Include(o => o.User)
-                .OrderByDescending(o => o.CreatedAt)
+            // Fetch only the sub-orders that belong to this manager's restaurant so that
+            // multi-restaurant orders are shown split — each manager sees only their portion.
+            var suborders = await _context.Suborders
+                .Where(s => s.Restaurant.Address.UserId == managerId
+                         && (s.Order.Status == "Pending" || s.Order.Status == "Paid" || s.Order.Status == "PickupsInProgress"))
+                .Include(s => s.Order).ThenInclude(o => o.User)
+                .Include(s => s.Orderitems).ThenInclude(oi => oi.MenuItem)
+                .OrderByDescending(s => s.Order.CreatedAt)
                 .ToListAsync();
 
             // Menu items whose category → restaurant → address belongs to this manager
@@ -101,9 +100,9 @@ namespace SwiftDrop.Services
 
             return new ManagerDashboardViewModel
             {
-                PendingOrders = pendingOrdersList.Count,
+                PendingOrders = suborders.Count,
                 ActiveItems = menuItemsList.Count,
-                Orders = pendingOrdersList,
+                Suborders = suborders,
                 MenuItems = menuItemsList
             };
         }
