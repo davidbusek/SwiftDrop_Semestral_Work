@@ -15,8 +15,13 @@ namespace SwiftDrop.Services
     /// </summary>
     public interface IManagerService
     {
-        /// <summary>Returns pending orders and active menu items for the manager dashboard.</summary>
-        Task<ManagerDashboardViewModel> GetDashboardDataAsync();
+        /// <summary>
+        /// Returns pending orders and active menu items for the manager dashboard,
+        /// scoped to the restaurants associated with <paramref name="managerId"/>
+        /// via the <c>Address.UserId</c> convention.
+        /// </summary>
+        /// <param name="managerId">Primary key of the authenticated <c>RestaurantManager</c> user.</param>
+        Task<ManagerDashboardViewModel> GetDashboardDataAsync(int managerId);
 
         /// <summary>
         /// Advances the order identified by <paramref name="id"/> to its next state
@@ -73,16 +78,26 @@ namespace SwiftDrop.Services
         }
 
         /// <inheritdoc/>
-        public async Task<ManagerDashboardViewModel> GetDashboardDataAsync()
+        public async Task<ManagerDashboardViewModel> GetDashboardDataAsync(int managerId)
         {
+            // Navigate directly through the FK chain so EF Core generates JOINs
+            // instead of a local-collection Contains(), which Pomelo cannot translate.
+
+            // Orders that contain at least one sub-order whose restaurant is owned by this manager
             var pendingOrdersList = await _context.Orders
-                .Where(o => o.Status == "Pending" || o.Status == "Paid" || o.Status == "PickupsInProgress")
+                .Where(o => (o.Status == "Pending" || o.Status == "Paid" || o.Status == "PickupsInProgress")
+                         && o.Suborders.Any(s => s.Restaurant.Address.UserId == managerId))
                 .Include(o => o.User)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
 
+            // Menu items whose category → restaurant → address belongs to this manager
             var menuItemsList = await _context.Menuitems
-                .OrderByDescending(m => m.Id).Take(50).ToListAsync();
+                .Where(m => m.Category.Restaurant.Address.UserId == managerId)
+                .Include(m => m.Category)
+                .OrderByDescending(m => m.Id)
+                .Take(100)
+                .ToListAsync();
 
             return new ManagerDashboardViewModel
             {

@@ -33,10 +33,10 @@ namespace SwiftDrop.Controllers
         private int CurrentManagerId =>
             int.Parse(User.FindFirstValue("UserId")!);
 
-        /// <summary>Displays the manager dashboard with pending orders and menu items.</summary>
+        /// <summary>Displays the manager dashboard with pending orders and menu items scoped to this manager's restaurants.</summary>
         public async Task<IActionResult> Index()
         {
-            var model = await _managerService.GetDashboardDataAsync();
+            var model = await _managerService.GetDashboardDataAsync(CurrentManagerId);
             return View(model);
         }
 

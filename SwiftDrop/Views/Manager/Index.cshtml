@@ -96,6 +96,7 @@
                     <tr class="border-warning text-uppercase text-warning">
                         <th class="ps-0 border-top-0 bg-transparent text-white">ID</th>
                         <th class="border-top-0 bg-transparent text-white">Name</th>
+                        <th class="border-top-0 bg-transparent text-white">Category</th>
                         <th class="border-top-0 bg-transparent text-white">Price</th>
                         <th class="border-top-0 bg-transparent text-white text-end pe-0">Action</th>
                     </tr>
@@ -103,13 +104,14 @@
                 <tbody>
                     @if(!Model.MenuItems.Any())
                     {
-                        <tr><td colspan="4" class="text-center text-white opacity-50 py-3">No menu items configured.</td></tr>
+                        <tr><td colspan="5" class="text-center text-white opacity-50 py-3">No menu items configured.</td></tr>
                     }
                     @foreach (var item in Model.MenuItems)
                     {
                         <tr class="border-bottom border-secondary bg-transparent">
                             <td class="ps-0 text-white opacity-50">@item.Id</td>
                             <td class="text-white fw-bold">@item.Name</td>
+                            <td class="text-white opacity-75">@item.Category?.Name</td>
                             <td class="text-light">@item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč</td>
                             <td class="text-end pe-0">
                                 <form method="post" asp-controller="Manager" asp-action="DeleteMenuItem" class="m-0 d-inline" onsubmit="return confirm('Remove @(item.Name.Replace("'", "")) from directory?');">
