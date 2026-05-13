@@ -7,12 +7,6 @@
 SwiftDrop is a next-generation food delivery platform developed as a **semester project for the University of West Bohemia (ZČU)**. 
 It specifically targets the "Multi-Restaurant Dilemma," allowing students and users to combine items from multiple restaurants into a single order with an optimized delivery fee.
 
-### Core Features (Use Cases)
-1.  **UC-01: Multi-Restaurant Cart Management** – Users can mix dishes from different providers in one session.
-2.  **UC-02: User Identity Management** – Secure registration and login system with persistent cookie-based authentication.
-3.  **UC-03: Dynamic Delivery Pricing** – Automated calculation of delivery fees based on order complexity.
-4.  **UC-04: Order Orchestration** – Seamless transition from selection to final checkout and persistence.
-
 ---
 
 ## Architecture & Design Patterns
