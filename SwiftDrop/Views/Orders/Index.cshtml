@@ -7,6 +7,19 @@
 <div class="container my-5">
     <h2 class="text-neon mb-4 text-uppercase fw-bold"><i class="bi bi-clock-history me-2"></i>Requisition History</h2>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success bg-dark text-neon border-success mb-4">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger bg-dark border-danger mb-4">
+            <i class="bi bi-x-circle-fill me-2"></i>@TempData["ErrorMessage"]
+        </div>
+    }
+
     @if (!Model.Orders.Any())
     {
         <div class="alert alert-info bg-dark text-white border-neon shadow">
@@ -46,11 +59,21 @@
                                         @displayStatus
                                     </span>
                                 </td>
-                                <td>
+                                <td class="text-end pe-0">
                                     <a asp-action="Track" asp-route-id="@order.Id"
-                                       class="btn btn-sm btn-outline-secondary text-neon border-neon py-0">
+                                       class="btn btn-sm btn-outline-secondary text-neon border-neon py-0 me-1">
                                         <i class="bi bi-geo-alt"></i>
                                     </a>
+                                    @if (order.Status == SwiftDrop.Models.OrderStatus.Pending || order.Status == SwiftDrop.Models.OrderStatus.Paid)
+                                    {
+                                        <form method="post" asp-action="Cancel" asp-route-id="@order.Id" class="d-inline m-0">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0"
+                                                    onclick="return confirm('Cancel order #@order.Id? This cannot be undone.')">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 </td>
                             </tr>
                         }

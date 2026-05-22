@@ -50,6 +50,16 @@ namespace SwiftDrop.Services
         /// <param name="orderId">Primary key of the order to track.</param>
         /// <param name="userEmail">Email of the authenticated customer — used to verify ownership.</param>
         Task<Order?> GetOrderForTrackingAsync(int orderId, string userEmail);
+
+        /// <summary>
+        /// Cancels an order owned by <paramref name="userEmail"/>.
+        /// Only orders in <c>Pending</c> or <c>Paid</c> state may be canceled —
+        /// once a restaurant has started preparing the order it is too late.
+        /// </summary>
+        /// <param name="orderId">Primary key of the order to cancel.</param>
+        /// <param name="userEmail">Email of the authenticated customer — used to verify ownership.</param>
+        /// <returns><c>true</c> if the order was canceled; <c>false</c> if not found, not owned by the user, or already past the cancelable window.</returns>
+        Task<bool> CancelOrderAsync(int orderId, string userEmail);
     }
 
     /// <summary>EF Core implementation of <see cref="IOrderService"/>.</summary>
@@ -232,6 +242,23 @@ namespace SwiftDrop.Services
                     .ThenInclude(s => s.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
                 .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == user.Id);
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> CancelOrderAsync(int orderId, string userEmail)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null) return false;
+
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == user.Id);
+            if (order == null) return false;
+
+            if (order.Status != OrderStatus.Pending && order.Status != OrderStatus.Paid)
+                return false;
+
+            order.Status = OrderStatus.Canceled;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         /// <inheritdoc/>

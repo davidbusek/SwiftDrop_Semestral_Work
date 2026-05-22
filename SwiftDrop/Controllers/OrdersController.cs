@@ -74,6 +74,35 @@ namespace SwiftDrop.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Cancels the specified order if it still belongs to the current user
+        /// and is in a cancelable state (<c>Pending</c> or <c>Paid</c>).
+        /// </summary>
+        /// <param name="id">Primary key of the order to cancel.</param>
+        /// <summary>
+        /// Cancels the specified order if it still belongs to the current user
+        /// and is in a cancelable state (<c>Pending</c> or <c>Paid</c>).
+        /// </summary>
+        /// <param name="id">Primary key of the order to cancel.</param>
+        /// <param name="returnToTrack">When <c>true</c>, redirects back to the Track view instead of the history list.</param>
+        [HttpPost]
+        public async Task<IActionResult> Cancel(int id, bool returnToTrack = false)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(userEmail))
+                return RedirectToAction("Login", "Account");
+
+            bool canceled = await _orderService.CancelOrderAsync(id, userEmail);
+
+            TempData[canceled ? "SuccessMessage" : "ErrorMessage"] = canceled
+                ? $"Order #{id} has been canceled."
+                : $"Order #{id} could not be canceled — it may already be in preparation.";
+
+            return returnToTrack
+                ? RedirectToAction(nameof(Track), new { id })
+                : RedirectToAction(nameof(Index));
+        }
+
         /// <summary>Displays a list of all orders placed by the currently logged-in user.</summary>
         public async Task<IActionResult> Index()
         {
