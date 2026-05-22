@@ -34,6 +34,6 @@ namespace SwiftDrop.ViewModels
         public List<Restaurant> Restaurants { get; set; } = new();
 
         /// <summary>The 100 most recently added menu items across all restaurants.</summary>
-        public List<Menuitem> MenuItems { get; set; } = new();
+        public List<MenuItem> MenuItems { get; set; } = new();
     }
 }

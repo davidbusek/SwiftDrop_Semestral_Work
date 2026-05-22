@@ -66,7 +66,7 @@ namespace SwiftDrop.Services
             {
                 cachedCategories = await _context.Categories
                     .Where(c => c.RestaurantId == restaurantId)
-                    .Include(c => c.Menuitems)
+                    .Include(c => c.MenuItems)
                     .ToListAsync();
 
                 _cache.Set(cacheKey, cachedCategories, TimeSpan.FromMinutes(15));
@@ -106,6 +106,10 @@ namespace SwiftDrop.Services
         /// <inheritdoc/>
         public async Task<IEnumerable<Restaurant>> GetAllAsync() =>
             await _context.Restaurants.ToListAsync();
+
+        /// <inheritdoc/>
+        public void InvalidateCategoryCache(int restaurantId) =>
+            _cache.Remove($"restaurant_categories_{restaurantId}");
 
         /// <summary>Removes the restaurant list cache entry so the next read fetches fresh data.</summary>
         private void InvalidateCache() => _cache.Remove(CacheKeyActiveRestaurants);

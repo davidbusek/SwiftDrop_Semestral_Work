@@ -1,3 +1,5 @@
+using SwiftDrop.Models;
+
 namespace SwiftDrop.Services.OrderStates
 {
     /// <summary>
@@ -20,14 +22,14 @@ namespace SwiftDrop.Services.OrderStates
         /// </exception>
         public static IOrderState GetState(string status) => status switch
         {
-            "Pending"             => new PendingState(),
-            "Paid"                => new PaidState(),
-            "PickupsInProgress"   => new PickupsInProgressState(),
-            "CourierAssigned"     => new CourierAssignedState(),
-            "Delivering"          => new DeliveringState(),
-            "Delivered"           => new DeliveredState(),
-            "Canceled"            => new CanceledState(),
-            _                     => throw new InvalidOperationException($"Unknown order status: {status}")
+            OrderStatus.Pending            => new PendingState(),
+            OrderStatus.Paid               => new PaidState(),
+            OrderStatus.PickupsInProgress  => new PickupsInProgressState(),
+            OrderStatus.CourierAssigned    => new CourierAssignedState(),
+            OrderStatus.Delivering         => new DeliveringState(),
+            OrderStatus.Delivered          => new DeliveredState(),
+            OrderStatus.Canceled           => new CanceledState(),
+            _                              => throw new InvalidOperationException($"Unknown order status: {status}")
         };
     }
 }

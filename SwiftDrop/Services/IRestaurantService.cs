@@ -12,6 +12,14 @@ namespace SwiftDrop.Services
         Task<IEnumerable<Restaurant>> GetAllAsync();
 
         /// <summary>
+        /// Removes the per-restaurant menu cache entry for <paramref name="restaurantId"/>
+        /// so the next read reflects the latest menu state.
+        /// Call this after any menu item or category write.
+        /// </summary>
+        /// <param name="restaurantId">Primary key of the restaurant whose cache should be cleared.</param>
+        void InvalidateCategoryCache(int restaurantId);
+
+        /// <summary>
         /// Returns the restaurant with the given <paramref name="id"/>,
         /// or <c>null</c> if not found.
         /// </summary>

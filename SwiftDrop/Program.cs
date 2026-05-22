@@ -66,9 +66,9 @@ namespace SwiftDrop
             app.UseRouting();
 
 
-            app.UseAuthentication(); 
+            app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSession(); 
 
             app.MapStaticAssets();
 

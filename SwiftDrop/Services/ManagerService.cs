@@ -67,14 +67,17 @@ namespace SwiftDrop.Services
     public class ManagerService : IManagerService
     {
         private readonly SwiftDropDbContext _context;
+        private readonly IRestaurantService _restaurantService;
 
         /// <summary>
         /// Initializes a new instance of <see cref="ManagerService"/>.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public ManagerService(SwiftDropDbContext context)
+        /// <param name="restaurantService">Used to invalidate the per-restaurant menu cache after writes.</param>
+        public ManagerService(SwiftDropDbContext context, IRestaurantService restaurantService)
         {
             _context = context;
+            _restaurantService = restaurantService;
         }
 
         /// <inheritdoc/>
@@ -82,16 +85,18 @@ namespace SwiftDrop.Services
         {
             // Fetch only the sub-orders that belong to this manager's restaurant so that
             // multi-restaurant orders are shown split — each manager sees only their portion.
-            var suborders = await _context.Suborders
+            var suborders = await _context.SubOrders
                 .Where(s => s.Restaurant.Address.UserId == managerId
-                         && (s.Order.Status == "Pending" || s.Order.Status == "Paid" || s.Order.Status == "PickupsInProgress"))
+                         && (s.Order.Status == OrderStatus.Pending
+                          || s.Order.Status == OrderStatus.Paid
+                          || s.Order.Status == OrderStatus.PickupsInProgress))
                 .Include(s => s.Order).ThenInclude(o => o.User)
-                .Include(s => s.Orderitems).ThenInclude(oi => oi.MenuItem)
+                .Include(s => s.OrderItems).ThenInclude(oi => oi.MenuItem)
                 .OrderByDescending(s => s.Order.CreatedAt)
                 .ToListAsync();
 
             // Menu items whose category → restaurant → address belongs to this manager
-            var menuItemsList = await _context.Menuitems
+            var menuItemsList = await _context.MenuItems
                 .Where(m => m.Category.Restaurant.Address.UserId == managerId)
                 .Include(m => m.Category)
                 .OrderByDescending(m => m.Id)
@@ -102,7 +107,7 @@ namespace SwiftDrop.Services
             {
                 PendingOrders = suborders.Count,
                 ActiveItems = menuItemsList.Count,
-                Suborders = suborders,
+                SubOrders = suborders,
                 MenuItems = menuItemsList
             };
         }
@@ -123,11 +128,16 @@ namespace SwiftDrop.Services
         /// <inheritdoc/>
         public async Task DeleteMenuItemAsync(int id)
         {
-            var item = await _context.Menuitems.FindAsync(id);
+            var item = await _context.MenuItems
+                .Include(m => m.Category)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item != null)
             {
-                _context.Menuitems.Remove(item);
+                var restaurantId = item.Category.RestaurantId;
+                _context.MenuItems.Remove(item);
                 await _context.SaveChangesAsync();
+                _restaurantService.InvalidateCategoryCache(restaurantId);
             }
         }
 
@@ -163,12 +173,13 @@ namespace SwiftDrop.Services
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
+            _restaurantService.InvalidateCategoryCache(model.RestaurantId);
         }
 
         /// <inheritdoc/>
         public async Task CreateMenuItemAsync(CreateMenuItemViewModel model)
         {
-            var item = new Menuitem
+            var item = new MenuItem
             {
                 CategoryId = model.CategoryId,
                 Name = model.Name,
@@ -180,8 +191,13 @@ namespace SwiftDrop.Services
                 IsAvailable = true
             };
 
-            _context.Menuitems.Add(item);
+            _context.MenuItems.Add(item);
             await _context.SaveChangesAsync();
+
+            // Resolve the restaurant ID from the category to invalidate the correct cache entry
+            var category = await _context.Categories.FindAsync(model.CategoryId);
+            if (category != null)
+                _restaurantService.InvalidateCategoryCache(category.RestaurantId);
         }
     }
 }

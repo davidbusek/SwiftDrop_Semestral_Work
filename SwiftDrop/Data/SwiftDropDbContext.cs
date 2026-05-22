@@ -21,13 +21,13 @@ public partial class SwiftDropDbContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<Menuitem> Menuitems { get; set; }
+    public virtual DbSet<MenuItem> MenuItems { get; set; }
 
-    public virtual DbSet<Openinghour> Openinghours { get; set; }
+    public virtual DbSet<OpeningHour> OpeningHours { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<Orderitem> Orderitems { get; set; }
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
 
     public virtual DbSet<Payment> Payments { get; set; }
 
@@ -35,7 +35,7 @@ public partial class SwiftDropDbContext : DbContext
 
     public virtual DbSet<Review> Reviews { get; set; }
 
-    public virtual DbSet<Suborder> Suborders { get; set; }
+    public virtual DbSet<SubOrder> SubOrders { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -86,7 +86,7 @@ public partial class SwiftDropDbContext : DbContext
                 .HasConstraintName("categories_ibfk_1");
         });
 
-        modelBuilder.Entity<Menuitem>(entity =>
+        modelBuilder.Entity<MenuItem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -104,12 +104,12 @@ public partial class SwiftDropDbContext : DbContext
             entity.Property(e => e.Price).HasPrecision(10, 2);
             entity.Property(e => e.WeightOrVolume).HasMaxLength(50);
 
-            entity.HasOne(d => d.Category).WithMany(p => p.Menuitems)
+            entity.HasOne(d => d.Category).WithMany(p => p.MenuItems)
                 .HasForeignKey(d => d.CategoryId)
                 .HasConstraintName("menuitems_ibfk_1");
         });
 
-        modelBuilder.Entity<Openinghour>(entity =>
+        modelBuilder.Entity<OpeningHour>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -123,7 +123,7 @@ public partial class SwiftDropDbContext : DbContext
             entity.Property(e => e.OpenTime).HasColumnType("time");
             entity.Property(e => e.RestaurantId).HasColumnType("int(11)");
 
-            entity.HasOne(d => d.Restaurant).WithMany(p => p.Openinghours)
+            entity.HasOne(d => d.Restaurant).WithMany(p => p.OpeningHours)
                 .HasForeignKey(d => d.RestaurantId)
                 .HasConstraintName("openinghours_ibfk_1");
         });
@@ -135,11 +135,12 @@ public partial class SwiftDropDbContext : DbContext
             entity.ToTable("Orders");
 
             entity.HasIndex(e => e.AddressId, "AddressId");
-
             entity.HasIndex(e => e.UserId, "UserId");
+            entity.HasIndex(e => e.CourierId, "CourierId");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.AddressId).HasColumnType("int(11)");
+            entity.Property(e => e.CourierId).HasColumnType("int(11)");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime");
@@ -155,13 +156,18 @@ public partial class SwiftDropDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("orders_ibfk_2");
 
+            entity.HasOne(d => d.Courier).WithMany()
+                .HasForeignKey(d => d.CourierId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("orders_ibfk_courier");
+
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("orders_ibfk_1");
         });
 
-        modelBuilder.Entity<Orderitem>(entity =>
+        modelBuilder.Entity<OrderItem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -178,12 +184,12 @@ public partial class SwiftDropDbContext : DbContext
             entity.Property(e => e.SubOrderId).HasColumnType("int(11)");
             entity.Property(e => e.UnitPrice).HasPrecision(10, 2);
 
-            entity.HasOne(d => d.MenuItem).WithMany(p => p.Orderitems)
+            entity.HasOne(d => d.MenuItem).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.MenuItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("orderitems_ibfk_2");
 
-            entity.HasOne(d => d.SubOrder).WithMany(p => p.Orderitems)
+            entity.HasOne(d => d.SubOrder).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.SubOrderId)
                 .HasConstraintName("orderitems_ibfk_1");
         });
@@ -273,7 +279,7 @@ public partial class SwiftDropDbContext : DbContext
                 .HasConstraintName("reviews_ibfk_1");
         });
 
-        modelBuilder.Entity<Suborder>(entity =>
+        modelBuilder.Entity<SubOrder>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
@@ -289,11 +295,11 @@ public partial class SwiftDropDbContext : DbContext
             entity.Property(e => e.RestaurantId).HasColumnType("int(11)");
             entity.Property(e => e.Status).HasColumnType("enum('Pending','Preparing','ReadyForPickUp','PickedUp')");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.Suborders)
+            entity.HasOne(d => d.Order).WithMany(p => p.SubOrders)
                 .HasForeignKey(d => d.OrderId)
                 .HasConstraintName("suborders_ibfk_1");
 
-            entity.HasOne(d => d.Restaurant).WithMany(p => p.Suborders)
+            entity.HasOne(d => d.Restaurant).WithMany(p => p.SubOrders)
                 .HasForeignKey(d => d.RestaurantId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("suborders_ibfk_2");

@@ -76,9 +76,9 @@
                                 <div class="mt-2">
                                     <small class="text-neon d-block mb-1">Contents:</small>
                                     <ul class="list-unstyled text-light opacity-75 mb-0" style="font-size: 0.85rem;">
-                                        @foreach (var sub in order.Suborders)
+                                        @foreach (var sub in order.SubOrders)
                                         {
-                                            foreach (var item in sub.Orderitems)
+                                            foreach (var item in sub.OrderItems)
                                             {
                                                 <li>- @item.Quantity x @(item.MenuItem?.Name ?? "Item")</li>
                                             }

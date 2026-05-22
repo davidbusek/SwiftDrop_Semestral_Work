@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -7,19 +7,31 @@ namespace SwiftDrop.Client
 {
     class Program
     {
+        // API key must match ApiKeys:CourierApi in the server's appsettings.json
+        private const string ApiKey = "change-me-before-production";
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("=======================================");
             Console.WriteLine("    SWIFTDROP TERMINAL CLIENT v1.0     ");
             Console.WriteLine("=======================================");
 
+            Console.Write("\nEnter your Courier ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int courierId))
+            {
+                Console.WriteLine("[Error] Invalid Courier ID. Press any key to exit.");
+                Console.ReadKey();
+                return;
+            }
+
             var baseUrl = "https://localhost:7032/api/courierapi";
             using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("X-Api-Key", ApiKey);
 
             try
             {
                 Console.WriteLine("\n[System] Connecting to Nexus...");
-                var response = await client.GetAsync($"{baseUrl}/dashboard");
+                var response = await client.GetAsync($"{baseUrl}/dashboard?courierId={courierId}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -49,7 +61,8 @@ namespace SwiftDrop.Client
 
             if (int.TryParse(input, out int orderId))
             {
-                var postResponse = await client.PostAsync($"{baseUrl}/advance-state/{orderId}", null);
+                var postResponse = await client.PostAsync(
+                    $"{baseUrl}/advance-state/{orderId}?courierId={courierId}", null);
                 if (postResponse.IsSuccessStatusCode)
                 {
                     Console.WriteLine($"[Success] Order #{orderId} state advanced!");

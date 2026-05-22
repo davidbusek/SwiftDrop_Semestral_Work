@@ -9,11 +9,11 @@ namespace SwiftDrop.Services.OrderStates
     public class PendingState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "Pending";
+        public string StatusName => OrderStatus.Pending;
         /// <inheritdoc/>
         public bool CanAdvance => true;
         /// <inheritdoc/>
-        public void Advance(Order order) => order.Status = "PickupsInProgress";
+        public void Advance(Order order) => order.Status = OrderStatus.PickupsInProgress;
     }
 
     /// <summary>
@@ -23,11 +23,11 @@ namespace SwiftDrop.Services.OrderStates
     public class PaidState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "Paid";
+        public string StatusName => OrderStatus.Paid;
         /// <inheritdoc/>
         public bool CanAdvance => true;
         /// <inheritdoc/>
-        public void Advance(Order order) => order.Status = "PickupsInProgress";
+        public void Advance(Order order) => order.Status = OrderStatus.PickupsInProgress;
     }
 
     /// <summary>
@@ -37,11 +37,11 @@ namespace SwiftDrop.Services.OrderStates
     public class PickupsInProgressState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "PickupsInProgress";
+        public string StatusName => OrderStatus.PickupsInProgress;
         /// <inheritdoc/>
         public bool CanAdvance => true;
         /// <inheritdoc/>
-        public void Advance(Order order) => order.Status = "CourierAssigned";
+        public void Advance(Order order) => order.Status = OrderStatus.CourierAssigned;
     }
 
     /// <summary>
@@ -51,11 +51,11 @@ namespace SwiftDrop.Services.OrderStates
     public class CourierAssignedState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "CourierAssigned";
+        public string StatusName => OrderStatus.CourierAssigned;
         /// <inheritdoc/>
         public bool CanAdvance => true;
         /// <inheritdoc/>
-        public void Advance(Order order) => order.Status = "Delivering";
+        public void Advance(Order order) => order.Status = OrderStatus.Delivering;
     }
 
     /// <summary>
@@ -65,13 +65,13 @@ namespace SwiftDrop.Services.OrderStates
     public class DeliveringState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "Delivering";
+        public string StatusName => OrderStatus.Delivering;
         /// <inheritdoc/>
         public bool CanAdvance => true;
         /// <inheritdoc/>
         public void Advance(Order order)
         {
-            order.Status = "Delivered";
+            order.Status = OrderStatus.Delivered;
             order.DeliveredAt = DateTime.Now;
         }
     }
@@ -83,7 +83,7 @@ namespace SwiftDrop.Services.OrderStates
     public class DeliveredState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "Delivered";
+        public string StatusName => OrderStatus.Delivered;
         /// <inheritdoc/>
         public bool CanAdvance => false;
         /// <inheritdoc/>
@@ -97,7 +97,7 @@ namespace SwiftDrop.Services.OrderStates
     public class CanceledState : IOrderState
     {
         /// <inheritdoc/>
-        public string StatusName => "Canceled";
+        public string StatusName => OrderStatus.Canceled;
         /// <inheritdoc/>
         public bool CanAdvance => false;
         /// <inheritdoc/>

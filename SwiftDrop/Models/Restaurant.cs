@@ -56,11 +56,11 @@ public partial class Restaurant
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
 
     /// <summary>Opening hours for each day of the week.</summary>
-    public virtual ICollection<Openinghour> Openinghours { get; set; } = new List<Openinghour>();
+    public virtual ICollection<OpeningHour> OpeningHours { get; set; } = new List<OpeningHour>();
 
     /// <summary>Customer reviews for this restaurant.</summary>
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     /// <summary>Sub-orders associated with deliveries from this restaurant.</summary>
-    public virtual ICollection<Suborder> Suborders { get; set; } = new List<Suborder>();
+    public virtual ICollection<SubOrder> SubOrders { get; set; } = new List<SubOrder>();
 }

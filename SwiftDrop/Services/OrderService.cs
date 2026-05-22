@@ -15,9 +15,9 @@ namespace SwiftDrop.Services
     public interface IOrderService
     {
         /// <summary>
-        /// Creates a complete order from the current cart: persists a delivery address
-        /// (geocoded via Nominatim), the order record, sub-orders per restaurant,
-        /// and all order items.
+        /// Creates a complete order from the current cart: reuses or creates a delivery address
+        /// (geocoded via Nominatim), then persists the order, sub-orders per restaurant,
+        /// and all order items — all within a single database transaction.
         /// </summary>
         /// <param name="userEmail">Email of the authenticated customer.</param>
         /// <param name="cartItems">Items to be ordered.</param>
@@ -86,71 +86,93 @@ namespace SwiftDrop.Services
             var itemPrice = cartItems.Sum(i => i.Price * i.Quantity);
             var totalPrice = itemPrice + deliveryFee;
 
-            var deliveryAddress = new Address
+            Order order;
+
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                UserId = user.Id,
-                Street = street,
-                City = city,
-                ZipCode = zipCode
-            };
+                // Reuse an existing address if the user has already ordered to the same location
+                var deliveryAddress = await _context.Addresses.FirstOrDefaultAsync(a =>
+                    a.UserId == user.Id &&
+                    a.Street == street &&
+                    a.City == city &&
+                    a.ZipCode == zipCode);
 
-            _context.Addresses.Add(deliveryAddress);
-            await _context.SaveChangesAsync();
-
-            var order = new Order
-            {
-                UserId = user.Id,
-                AddressId = deliveryAddress.Id,
-                Status = "Pending",
-                ItemPrice = itemPrice,
-                DeliveryFee = deliveryFee,
-                TotalPrice = totalPrice,
-                CreatedAt = DateTime.Now
-            };
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            foreach (var group in cartItems.GroupBy(i => i.RestaurantId))
-            {
-                var subOrder = new Suborder
+                if (deliveryAddress == null)
                 {
-                    OrderId = order.Id,
-                    RestaurantId = group.Key,
-                    Status = "Pending"
+                    deliveryAddress = new Address
+                    {
+                        UserId = user.Id,
+                        Street = street,
+                        City = city,
+                        ZipCode = zipCode
+                    };
+                    _context.Addresses.Add(deliveryAddress);
+                    await _context.SaveChangesAsync();
+                }
+
+                order = new Order
+                {
+                    UserId = user.Id,
+                    AddressId = deliveryAddress.Id,
+                    Status = OrderStatus.Pending,
+                    ItemPrice = itemPrice,
+                    DeliveryFee = deliveryFee,
+                    TotalPrice = totalPrice,
+                    CreatedAt = DateTime.Now
                 };
 
-                _context.Suborders.Add(subOrder);
+                _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
-                foreach (var item in group)
+                foreach (var group in cartItems.GroupBy(i => i.RestaurantId))
                 {
-                    _context.Orderitems.Add(new Orderitem
+                    var subOrder = new SubOrder
                     {
-                        SubOrderId = subOrder.Id,
-                        MenuItemId = item.MenuItemId,
-                        Quantity = item.Quantity,
-                        UnitPrice = item.Price
-                    });
+                        OrderId = order.Id,
+                        RestaurantId = group.Key,
+                        Status = SubOrderStatus.Pending
+                    };
+
+                    _context.SubOrders.Add(subOrder);
+                    await _context.SaveChangesAsync();
+
+                    foreach (var item in group)
+                    {
+                        _context.OrderItems.Add(new OrderItem
+                        {
+                            SubOrderId = subOrder.Id,
+                            MenuItemId = item.MenuItemId,
+                            Quantity = item.Quantity,
+                            UnitPrice = item.Price
+                        });
+                    }
                 }
-            }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            // Geocoding finishes here (usually already done by the time DB work completes)
-            var coords = await geocodeTask;
-            if (coords.HasValue)
-            {
-                deliveryAddress.Latitude = coords.Value.Lat;
-                deliveryAddress.Longitude = coords.Value.Lng;
+                // Geocoding finishes here (usually already done by the time DB work completes)
+                var coords = await geocodeTask;
+                if (coords.HasValue)
+                {
+                    deliveryAddress.Latitude = coords.Value.Lat;
+                    deliveryAddress.Longitude = coords.Value.Lng;
+                }
+                else
+                {
+                    // Fallback coordinates (Prague center) if geocoding fails or address is invalid
+                    deliveryAddress.Latitude = 50.08804m;
+                    deliveryAddress.Longitude = 14.42076m;
+                }
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
-            else
+            catch
             {
-                // Fallback coordinates (Prague center) if geocoding fails or address is invalid
-                deliveryAddress.Latitude = 50.08804m;
-                deliveryAddress.Longitude = 14.42076m;
+                await transaction.RollbackAsync();
+                throw;
             }
-            await _context.SaveChangesAsync();
 
             return order;
         }
@@ -205,7 +227,7 @@ namespace SwiftDrop.Services
 
             var order = await _context.Orders.FindAsync(orderId);
             if (order != null)
-                order.Status = paymentSuccess ? "Paid" : "Canceled";
+                order.Status = paymentSuccess ? OrderStatus.Paid : OrderStatus.Canceled;
 
             await _context.SaveChangesAsync();
             return paymentSuccess;

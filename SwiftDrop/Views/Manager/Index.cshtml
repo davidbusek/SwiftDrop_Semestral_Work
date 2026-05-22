@@ -45,18 +45,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if(!Model.Suborders.Any())
+                    @if(!Model.SubOrders.Any())
                     {
                         <tr><td colspan="6" class="text-center text-white opacity-50 py-3">No pending orders found.</td></tr>
                     }
-                    @foreach (var sub in Model.Suborders)
+                    @foreach (var sub in Model.SubOrders)
                     {
                         var parentOrder = sub.Order;
                         <tr class="border-bottom border-secondary bg-transparent">
                             <td class="ps-0 text-white">
                                 #@parentOrder.Id
                                 <ul class="list-unstyled text-light opacity-75 mb-0 mt-1" style="font-size:.8rem;">
-                                    @foreach (var item in sub.Orderitems)
+                                    @foreach (var item in sub.OrderItems)
                                     {
                                         <li>@item.Quantity× @(item.MenuItem?.Name ?? "Item")</li>
                                     }
@@ -64,18 +64,18 @@
                             </td>
                             <td class="text-white">@(parentOrder.User?.FirstName ?? "Unknown")</td>
                             <td class="text-neon fw-bold">
-                                @sub.Orderitems.Sum(i => i.Quantity * i.UnitPrice).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč
+                                @sub.OrderItems.Sum(i => i.Quantity * i.UnitPrice).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) Kč
                             </td>
                             <td class="text-light opacity-75">@parentOrder.CreatedAt?.ToString("HH:mm")</td>
                             <td><span class="badge bg-warning text-dark text-uppercase border border-warning">@parentOrder.Status?.Replace("PickupsInProgress", "Pickup In Progress").Replace("CourierAssigned", "Courier Assigned")</span></td>
                             <td class="text-end pe-0">
                                 <form method="post" asp-controller="Manager" asp-action="AdvanceOrderState" class="m-0 d-inline">
                                     <input type="hidden" name="id" value="@parentOrder.Id" />
-                                    @if(parentOrder.Status == "Pending" || parentOrder.Status == "Paid")
+                                    @if(parentOrder.Status == OrderStatus.Pending || parentOrder.Status == OrderStatus.Paid)
                                     {
                                         <button type="submit" class="btn btn-sm cyber-btn bg-warning text-dark text-uppercase fw-bold"><i class="bi bi-fire"></i> Start Prep</button>
                                     }
-                                    else if(parentOrder.Status == "PickupsInProgress")
+                                    else if(parentOrder.Status == OrderStatus.PickupsInProgress)
                                     {
                                         <button type="submit" class="btn btn-sm btn-outline-success text-uppercase fw-bold"><i class="bi bi-box-seam"></i> Ready for Courier</button>
                                     }

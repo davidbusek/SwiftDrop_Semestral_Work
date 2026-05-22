@@ -13,7 +13,7 @@ public partial class Category
 
     public int? DisplayOrder { get; set; }
 
-    public virtual ICollection<Menuitem> Menuitems { get; set; } = new List<Menuitem>();
+    public virtual ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
     public virtual Restaurant Restaurant { get; set; } = null!;
 }

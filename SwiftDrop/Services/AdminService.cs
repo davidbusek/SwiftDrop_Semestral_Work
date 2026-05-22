@@ -85,14 +85,17 @@ namespace SwiftDrop.Services
     public class AdminService : IAdminService
     {
         private readonly SwiftDropDbContext _context;
+        private readonly IRestaurantService _restaurantService;
 
         /// <summary>
         /// Initializes a new instance of <see cref="AdminService"/>.
         /// </summary>
         /// <param name="context">Database context.</param>
-        public AdminService(SwiftDropDbContext context)
+        /// <param name="restaurantService">Used to invalidate the per-restaurant menu cache after writes.</param>
+        public AdminService(SwiftDropDbContext context, IRestaurantService restaurantService)
         {
             _context = context;
+            _restaurantService = restaurantService;
         }
 
         /// <inheritdoc/>
@@ -119,7 +122,7 @@ namespace SwiftDrop.Services
                 Restaurants = await _context.Restaurants
                     .Include(r => r.Address)
                     .OrderByDescending(r => r.Id).ToListAsync(),
-                MenuItems = await _context.Menuitems
+                MenuItems = await _context.MenuItems
                     .Include(m => m.Category)
                     .ThenInclude(c => c.Restaurant)
                     .OrderByDescending(m => m.Id).Take(100).ToListAsync()
@@ -163,7 +166,7 @@ namespace SwiftDrop.Services
         /// <inheritdoc/>
         public async Task CreateMenuItemAsync(CreateMenuItemViewModel model)
         {
-            var item = new Menuitem
+            var item = new MenuItem
             {
                 CategoryId = model.CategoryId,
                 Name = model.Name,
@@ -175,24 +178,31 @@ namespace SwiftDrop.Services
                 IsAvailable = true
             };
 
-            _context.Menuitems.Add(item);
+            _context.MenuItems.Add(item);
             await _context.SaveChangesAsync();
+
+            var category = await _context.Categories.FindAsync(model.CategoryId);
+            if (category != null)
+                _restaurantService.InvalidateCategoryCache(category.RestaurantId);
         }
 
         /// <inheritdoc/>
         public async Task DeleteMenuItemAsync(int id)
         {
-            var item = await _context.Menuitems
-                .Include(m => m.Orderitems)
+            var item = await _context.MenuItems
+                .Include(m => m.OrderItems)
+                .Include(m => m.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (item != null)
             {
+                var restaurantId = item.Category.RestaurantId;
                 // Remove referencing order line items first; MenuItemId is NOT NULL so
                 // the DB cannot set it to null — we must delete the rows explicitly.
-                _context.Orderitems.RemoveRange(item.Orderitems);
-                _context.Menuitems.Remove(item);
+                _context.OrderItems.RemoveRange(item.OrderItems);
+                _context.MenuItems.Remove(item);
                 await _context.SaveChangesAsync();
+                _restaurantService.InvalidateCategoryCache(restaurantId);
             }
         }
 
@@ -201,7 +211,7 @@ namespace SwiftDrop.Services
         {
             var restaurant = await _context.Restaurants
                 .Include(r => r.Categories)
-                .ThenInclude(c => c.Menuitems)
+                .ThenInclude(c => c.MenuItems)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (restaurant != null)

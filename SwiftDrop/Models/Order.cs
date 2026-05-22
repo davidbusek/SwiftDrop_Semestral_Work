@@ -5,7 +5,7 @@ namespace SwiftDrop.Models;
 
 /// <summary>
 /// Represents a customer order that may span multiple restaurants.
-/// Each restaurant's portion is tracked as a separate <see cref="Suborder"/>.
+/// Each restaurant's portion is tracked as a separate <see cref="SubOrder"/>.
 /// Status transitions are managed by the State Pattern via
 /// <see cref="SwiftDrop.Services.OrderStates.OrderStateFactory"/>.
 /// </summary>
@@ -42,14 +42,25 @@ public partial class Order
     /// <summary>Timestamp set when the order transitions to <c>Delivered</c>.</summary>
     public DateTime? DeliveredAt { get; set; }
 
+    /// <summary>
+    /// Foreign key of the courier assigned to this order.
+    /// Set when the courier first advances the state from <c>CourierAssigned</c>.
+    /// <c>null</c> means the order is not yet claimed by any courier.
+    /// Requires <c>ALTER TABLE Orders ADD COLUMN CourierId INT NULL;</c> on existing databases.
+    /// </summary>
+    public int? CourierId { get; set; }
+
     /// <summary>Delivery address navigation property.</summary>
     public virtual Address Address { get; set; } = null!;
+
+    /// <summary>The courier assigned to deliver this order (nullable).</summary>
+    public virtual User? Courier { get; set; }
 
     /// <summary>Payment records associated with this order.</summary>
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     /// <summary>Per-restaurant sub-orders that make up this order.</summary>
-    public virtual ICollection<Suborder> Suborders { get; set; } = new List<Suborder>();
+    public virtual ICollection<SubOrder> SubOrders { get; set; } = new List<SubOrder>();
 
     /// <summary>Customer who placed the order.</summary>
     public virtual User User { get; set; } = null!;
