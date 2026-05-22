@@ -6,6 +6,28 @@
 
 @section Styles {
     <style>
+        .sd-addr-card {
+            display: block;
+            padding: 8px 12px;
+            border: 1px solid #1f2940;
+            border-radius: 4px;
+            color: #adb5bd;
+            cursor: pointer;
+            transition: border-color .15s, color .15s, box-shadow .15s;
+            font-size: .9rem;
+        }
+        .sd-addr-card:hover {
+            border-color: #00f0ff;
+            color: #fff;
+        }
+        .sd-addr-card.selected {
+            border-color: #00f0ff;
+            color: #fff;
+            box-shadow: 0 0 0 1px #00f0ff, 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+        .sd-addr-new { color: #00f0ff; }
+        .sd-addr-new.selected { color: #00f0ff; }
+
         /* Remove number input spin buttons */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button {
@@ -126,24 +148,70 @@
 
                     <form method="post" asp-controller="Cart" asp-action="Checkout" class="mb-3">
                         <h5 class="text-neon mb-2 text-uppercase border-bottom border-secondary pb-2 mt-3">Delivery Address</h5>
-                        <div class="mb-2">
-                            <input type="text" name="street" value="@Model.DeliveryStreet"
-                                   class="form-control bg-dark text-white border-secondary"
-                                   placeholder="Street &amp; Number (e.g. Václavské nám. 1)"
-                                   required />
-                        </div>
-                        <div class="mb-2">
-                            <input type="text" name="city" value="@Model.DeliveryCity"
-                                   class="form-control bg-dark text-white border-secondary"
-                                   placeholder="City (e.g. Praha)"
-                                   required />
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" name="zipCode" value="@Model.DeliveryZipCode"
-                                   class="form-control bg-dark text-white border-secondary"
-                                   placeholder="ZIP Code (e.g. 110 00)"
-                                   required />
-                        </div>
+
+                        @if (Model.SavedAddresses.Any())
+                        {
+                            <div class="mb-3">
+                                @foreach (var addr in Model.SavedAddresses)
+                                {
+                                    var isFirst = addr == Model.SavedAddresses.First();
+                                    <input type="radio" name="savedAddressId" id="addr_@addr.Id"
+                                           value="@addr.Id" class="sd-addr-radio"
+                                           @(isFirst ? "checked" : "")
+                                           onchange="sdToggleNewAddress(this)" hidden />
+                                    <label for="addr_@addr.Id" class="sd-addr-card w-100 mb-2 @(isFirst ? "selected" : "")">
+                                        <i class="bi bi-geo-alt me-2"></i>@addr.Street, @addr.City @addr.ZipCode
+                                    </label>
+                                }
+                                <input type="radio" name="savedAddressId" id="addr_new"
+                                       value="0" class="sd-addr-radio"
+                                       onchange="sdToggleNewAddress(this)" hidden />
+                                <label for="addr_new" class="sd-addr-card sd-addr-new w-100 mb-2">
+                                    <i class="bi bi-plus-circle me-2"></i>Use a new address
+                                </label>
+                            </div>
+
+                            <div id="sdNewAddressFields" style="display:none">
+                                <div class="mb-2">
+                                    <input type="text" name="street" id="sdStreet"
+                                           class="form-control bg-dark text-white border-secondary"
+                                           placeholder="Street &amp; Number (e.g. Václavské nám. 1)" />
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" name="city" id="sdCity"
+                                           class="form-control bg-dark text-white border-secondary"
+                                           placeholder="City (e.g. Praha)" />
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" name="zipCode" id="sdZip"
+                                           class="form-control bg-dark text-white border-secondary"
+                                           placeholder="ZIP Code (e.g. 110 00)" />
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="savedAddressId" value="0" />
+                            <div class="mb-2">
+                                <input type="text" name="street"
+                                       class="form-control bg-dark text-white border-secondary"
+                                       placeholder="Street &amp; Number (e.g. Václavské nám. 1)"
+                                       required />
+                            </div>
+                            <div class="mb-2">
+                                <input type="text" name="city"
+                                       class="form-control bg-dark text-white border-secondary"
+                                       placeholder="City (e.g. Praha)"
+                                       required />
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="zipCode"
+                                       class="form-control bg-dark text-white border-secondary"
+                                       placeholder="ZIP Code (e.g. 110 00)"
+                                       required />
+                            </div>
+                        }
+
                         <button type="submit" class="btn cyber-btn w-100 mt-2 text-uppercase fw-bold">
                             <i class="bi bi-credit-card me-1"></i> Payment
                         </button>
@@ -159,3 +227,24 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function sdToggleNewAddress(radio) {
+            document.querySelectorAll('.sd-addr-card').forEach(function (el) {
+                el.classList.remove('selected');
+            });
+            var label = document.querySelector('label[for="' + radio.id + '"]');
+            if (label) label.classList.add('selected');
+
+            var fields = document.getElementById('sdNewAddressFields');
+            if (!fields) return;
+            var isNew = radio.value === '0';
+            fields.style.display = isNew ? 'block' : 'none';
+            ['sdStreet', 'sdCity', 'sdZip'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.required = isNew;
+            });
+        }
+    </script>
+}

@@ -102,6 +102,7 @@ namespace SwiftDrop.Services
                 // Reuse an existing address if the user has already ordered to the same location
                 var deliveryAddress = await _context.Addresses.FirstOrDefaultAsync(a =>
                     a.UserId == user.Id &&
+                    a.IsDeliveryAddress &&
                     a.Street == street &&
                     a.City == city &&
                     a.ZipCode == zipCode);
@@ -113,7 +114,8 @@ namespace SwiftDrop.Services
                         UserId = user.Id,
                         Street = street,
                         City = city,
-                        ZipCode = zipCode
+                        ZipCode = zipCode,
+                        IsDeliveryAddress = true
                     };
                     _context.Addresses.Add(deliveryAddress);
                     await _context.SaveChangesAsync();

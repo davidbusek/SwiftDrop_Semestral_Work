@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 22, 2026 at 09:12 PM
+-- Generation Time: May 23, 2026 at 12:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -37,21 +37,22 @@ CREATE TABLE `Addresses` (
   `ZipCode` varchar(10) NOT NULL,
   `Latitude` decimal(10,8) DEFAULT NULL,
   `Longitude` decimal(11,8) DEFAULT NULL,
-  `UserId` int(11) NOT NULL
+  `UserId` int(11) NOT NULL,
+  `IsDeliveryAddress` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `Addresses`
 --
 
-INSERT INTO `Addresses` (`Id`, `Street`, `City`, `ZipCode`, `Latitude`, `Longitude`, `UserId`) VALUES
-(1, 'Dlouhá 12', 'Praha 1', '11000', 50.08900000, 14.42100000, 3),
-(2, 'Náměstí Míru 5', 'Praha 2', '12000', 50.07550000, 14.43780000, 4),
-(3, 'Václavské náměstí 15', 'Praha 1', '11000', 50.08150000, 14.42720000, 5),
-(4, 'Náměstí Republiky 3', 'Praha 1', '11000', 50.08780000, 14.43020000, 6),
-(5, 'Křižíkova 20', 'Praha 8', '18600', 50.09210000, 14.45330000, 7),
-(6, 'Vinohradská 25', 'Praha 2', '12000', 50.07510000, 14.43940000, 8),
-(7, 'U Michelského mlýna 380/4', 'Praha 4', '140 00', 50.05426380, 14.45096560, 3);
+INSERT INTO `Addresses` (`Id`, `Street`, `City`, `ZipCode`, `Latitude`, `Longitude`, `UserId`, `IsDeliveryAddress`) VALUES
+(1, 'Dlouhá 12', 'Praha 1', '11000', 50.08920730, 14.42251690, 3, 1),
+(2, 'Náměstí Míru 5', 'Praha 2', '12000', 50.07550000, 14.43780000, 4, 1),
+(3, 'Václavské náměstí 15', 'Praha 1', '11000', 50.08150000, 14.42720000, 5, 0),
+(4, 'Náměstí Republiky 3', 'Praha 1', '11000', 50.08780000, 14.43020000, 6, 0),
+(5, 'Křižíkova 20', 'Praha 8', '18600', 50.09210000, 14.45330000, 7, 0),
+(6, 'Vinohradská 25', 'Praha 2', '12000', 50.07510000, 14.43940000, 8, 0),
+(7, 'U Michelského mlýna 380/4', 'Praha 4', '140 00', 50.05426380, 14.45096560, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -184,7 +185,9 @@ INSERT INTO `Orderitems` (`Id`, `SubOrderId`, `MenuItemId`, `Quantity`, `UnitPri
 (11, 9, 1, 1, 229.00, NULL),
 (12, 9, 2, 1, 289.00, NULL),
 (13, 10, 16, 1, 499.00, NULL),
-(14, 11, 9, 1, 229.00, NULL);
+(14, 11, 9, 1, 229.00, NULL),
+(15, 12, 2, 1, 289.00, NULL),
+(16, 13, 24, 1, 119.00, NULL);
 
 -- --------------------------------------------------------
 
@@ -216,7 +219,8 @@ INSERT INTO `Orders` (`Id`, `UserId`, `AddressId`, `Status`, `ItemPrice`, `Deliv
 (3, 3, 1, 'Paid', 508.00, 64.00, 572.00, '2026-05-11 18:15:00', NULL, NULL),
 (4, 4, 2, 'Pending', 189.00, 39.00, 228.00, '2026-05-13 11:00:00', NULL, NULL),
 (5, 3, 7, 'Delivered', 728.00, 64.00, 792.00, '2026-05-13 16:55:31', '2026-05-13 16:56:42', NULL),
-(6, 3, 7, 'CourierAssigned', 1246.00, 89.00, 1335.00, '2026-05-22 21:10:20', NULL, NULL);
+(6, 3, 7, 'Delivered', 1246.00, 89.00, 1335.00, '2026-05-22 21:10:20', '2026-05-22 21:21:56', 2),
+(7, 3, 1, 'Paid', 408.00, 64.00, 472.00, '2026-05-23 00:10:56', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -244,7 +248,8 @@ INSERT INTO `Payments` (`Id`, `OrderId`, `PaymentMethod`, `PaymentStatus`, `Amou
 (3, 3, 'GooglePay', 'Paid', 572.00, '2026-05-11 18:15:05'),
 (4, 4, 'CardOnline', 'Unpaid', 228.00, '2026-05-13 11:00:05'),
 (5, 5, 'CardOnline', 'Paid', 792.00, '2026-05-13 16:55:33'),
-(6, 6, 'CardOnline', 'Paid', 1335.00, '2026-05-22 21:10:21');
+(6, 6, 'CardOnline', 'Paid', 1335.00, '2026-05-22 21:10:21'),
+(7, 7, 'CardOnline', 'Paid', 472.00, '2026-05-23 00:10:58');
 
 -- --------------------------------------------------------
 
@@ -325,7 +330,9 @@ INSERT INTO `Suborders` (`Id`, `OrderId`, `RestaurantId`, `Status`, `EstimatedRe
 (8, 5, 3, 'Pending', NULL),
 (9, 6, 1, 'Pending', NULL),
 (10, 6, 3, 'Pending', NULL),
-(11, 6, 2, 'Pending', NULL);
+(11, 6, 2, 'Pending', NULL),
+(12, 7, 1, 'Pending', NULL),
+(13, 7, 4, 'Pending', NULL);
 
 -- --------------------------------------------------------
 
@@ -358,7 +365,8 @@ INSERT INTO `Users` (`Id`, `FirstName`, `LastName`, `Email`, `PhoneNumber`, `Pas
 (5, 'Tomáš', 'Burger', 'manager.burger@swiftdrop.cz', NULL, '$2a$11$q3sZzNORRQ2cadloCiGwRu5xQtHGyQQHJU8wJtE36xqcZ46p103sK', 'RestaurantManager', '2026-05-01 10:00:00', 1),
 (6, 'Lucie', 'Pizza', 'manager.pizza@swiftdrop.cz', NULL, '$2a$11$q3sZzNORRQ2cadloCiGwRu5xQtHGyQQHJU8wJtE36xqcZ46p103sK', 'RestaurantManager', '2026-05-01 10:00:00', 1),
 (7, 'Martin', 'Sushi', 'manager.sushi@swiftdrop.cz', NULL, '$2a$11$q3sZzNORRQ2cadloCiGwRu5xQtHGyQQHJU8wJtE36xqcZ46p103sK', 'RestaurantManager', '2026-05-01 10:00:00', 1),
-(8, 'Eva', 'Green', 'manager.green@swiftdrop.cz', NULL, '$2a$11$q3sZzNORRQ2cadloCiGwRu5xQtHGyQQHJU8wJtE36xqcZ46p103sK', 'RestaurantManager', '2026-05-01 10:00:00', 1);
+(8, 'Eva', 'Green', 'manager.green@swiftdrop.cz', NULL, '$2a$11$q3sZzNORRQ2cadloCiGwRu5xQtHGyQQHJU8wJtE36xqcZ46p103sK', 'RestaurantManager', '2026-05-01 10:00:00', 1),
+(9, 'dfv', 'fdsg', 'pepega@sssvrt.cz', '765543219', '$2a$11$WBcgNKIOOZ5pe0lRVH4UKOy8Otuzs1W8W9JFjFB0BoyaQHZn9bstW', 'Customer', '2026-05-22 21:54:57', 1);
 
 --
 -- Indexes for dumped tables
@@ -478,19 +486,19 @@ ALTER TABLE `Openinghours`
 -- AUTO_INCREMENT for table `Orderitems`
 --
 ALTER TABLE `Orderitems`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `Orders`
 --
 ALTER TABLE `Orders`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Payments`
 --
 ALTER TABLE `Payments`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `Restaurants`
@@ -508,13 +516,13 @@ ALTER TABLE `Reviews`
 -- AUTO_INCREMENT for table `Suborders`
 --
 ALTER TABLE `Suborders`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `Users`
 --
 ALTER TABLE `Users`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables

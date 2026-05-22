@@ -31,6 +31,13 @@ public partial class Address
     /// <summary>Foreign key of the user who owns this address.</summary>
     public int UserId { get; set; }
 
+    /// <summary>
+    /// <c>true</c> for customer delivery addresses shown on checkout.
+    /// <c>false</c> for restaurant pickup addresses, which share this table
+    /// but must never appear in the customer address picker.
+    /// </summary>
+    public bool IsDeliveryAddress { get; set; }
+
     /// <summary>Orders delivered to this address.</summary>
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 

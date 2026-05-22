@@ -1,6 +1,10 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SwiftDrop.Data;
 using SwiftDrop.Models;
 using SwiftDrop.Services;
 using SwiftDrop.ViewModels;
@@ -14,31 +18,52 @@ namespace SwiftDrop.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly SwiftDropDbContext _context;
 
         /// <summary>
         /// Initializes a new instance of <see cref="CartController"/>.
         /// </summary>
         /// <param name="cartService">Session-backed cart service.</param>
-        public CartController(ICartService cartService)
+        /// <param name="context">Database context used to load saved addresses.</param>
+        public CartController(ICartService cartService, SwiftDropDbContext context)
         {
             _cartService = cartService;
+            _context = context;
         }
 
-        /// <summary>Displays the cart summary with item list, subtotal, delivery fee and total.</summary>
+        /// <summary>
+        /// Displays the cart summary with item list, subtotal, delivery fee and total.
+        /// When the user is authenticated their saved addresses are included so the view
+        /// can render address radio buttons on the checkout form.
+        /// </summary>
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var cartItems = _cartService.GetCart();
             var deliveryFee = _cartService.GetTotalDeliveryPrice();
             var subtotal = cartItems.Sum(i => i.Price * i.Quantity);
 
-            return View(new CartViewModel
+            var vm = new CartViewModel
             {
                 CartItems = cartItems,
                 DeliveryFee = deliveryFee,
                 Subtotal = subtotal,
                 Total = subtotal + deliveryFee
-            });
+            };
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email);
+                if (email != null)
+                {
+                    vm.SavedAddresses = await _context.Addresses
+                        .Where(a => a.User.Email == email && a.IsDeliveryAddress)
+                        .OrderByDescending(a => a.Id)
+                        .ToListAsync();
+                }
+            }
+
+            return View(vm);
         }
 
         /// <summary>
@@ -82,21 +107,43 @@ namespace SwiftDrop.Controllers
         }
 
         /// <summary>
-        /// Processes the checkout: validates the delivery address, creates the order,
-        /// runs mock payment and clears the cart.
+        /// Processes the checkout: resolves the delivery address (saved or newly entered),
+        /// creates the order, runs mock payment and clears the cart on success.
         /// Requires the user to be authenticated.
         /// </summary>
-        /// <param name="street">Delivery street.</param>
-        /// <param name="city">Delivery city.</param>
-        /// <param name="zipCode">Delivery ZIP code.</param>
+        /// <param name="savedAddressId">
+        /// ID of a previously saved address to use. When &gt; 0 the street/city/zipCode
+        /// parameters are ignored and the stored address is used instead.
+        /// </param>
+        /// <param name="street">Delivery street — required when <paramref name="savedAddressId"/> is 0.</param>
+        /// <param name="city">Delivery city — required when <paramref name="savedAddressId"/> is 0.</param>
+        /// <param name="zipCode">Delivery ZIP code — required when <paramref name="savedAddressId"/> is 0.</param>
         /// <param name="orderService">Order service injected per-request.</param>
         [HttpPost]
-        public async System.Threading.Tasks.Task<IActionResult> Checkout(
-            string street, string city, string zipCode,
+        public async Task<IActionResult> Checkout(
+            int savedAddressId,
+            string? street, string? city, string? zipCode,
             [FromServices] IOrderService orderService)
         {
             if (!User.Identity!.IsAuthenticated)
                 return RedirectToAction("Login", "Account");
+
+            if (savedAddressId > 0)
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email);
+                var addr = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.Id == savedAddressId && a.User.Email == email && a.IsDeliveryAddress);
+
+                if (addr == null)
+                {
+                    TempData["ErrorMessage"] = "Selected address not found.";
+                    return RedirectToAction("Index");
+                }
+
+                street = addr.Street;
+                city = addr.City;
+                zipCode = addr.ZipCode;
+            }
 
             if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(zipCode))
             {

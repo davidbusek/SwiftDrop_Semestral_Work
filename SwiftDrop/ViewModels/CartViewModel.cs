@@ -21,13 +21,7 @@ namespace SwiftDrop.ViewModels
         /// <summary>Grand total: <see cref="Subtotal"/> + <see cref="DeliveryFee"/>.</summary>
         public decimal Total { get; set; }
 
-        /// <summary>Street pre-filled from the user's last order (optional).</summary>
-        public string DeliveryStreet { get; set; } = string.Empty;
-
-        /// <summary>City pre-filled from the user's last order (optional).</summary>
-        public string DeliveryCity { get; set; } = string.Empty;
-
-        /// <summary>ZIP code pre-filled from the user's last order (optional).</summary>
-        public string DeliveryZipCode { get; set; } = string.Empty;
+        /// <summary>Saved delivery addresses belonging to the authenticated user. Empty for guests.</summary>
+        public List<Address> SavedAddresses { get; set; } = new();
     }
 }
