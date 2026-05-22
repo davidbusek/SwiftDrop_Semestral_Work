@@ -108,9 +108,16 @@ namespace SwiftDrop.Controllers
 
         // ── Profile ──────────────────────────────────────────────────────────────
 
+        /// <summary>Loads delivery addresses for the given user, used across profile actions.</summary>
+        private async Task<List<Address>> GetDeliveryAddressesAsync(int userId) =>
+            await _context.Addresses
+                .Where(a => a.UserId == userId && a.IsDeliveryAddress)
+                .OrderByDescending(a => a.Id)
+                .ToListAsync();
+
         /// <summary>
-        /// Displays the authenticated user's profile page with an edit form
-        /// and a password change form.
+        /// Displays the authenticated user's profile page with an edit form,
+        /// a password change form and a saved delivery addresses section.
         /// </summary>
         [Authorize]
         [HttpGet]
@@ -127,7 +134,8 @@ namespace SwiftDrop.Controllers
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+                SavedAddresses = await GetDeliveryAddressesAsync(user.Id)
             });
         }
 
@@ -150,6 +158,7 @@ namespace SwiftDrop.Controllers
                 var u = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
                 model.Email = u?.Email ?? string.Empty;
                 model.Role = u?.Role ?? string.Empty;
+                if (u != null) model.SavedAddresses = await GetDeliveryAddressesAsync(u.Id);
                 ViewBag.ChangePassword = new ChangePasswordViewModel();
                 return View("Profile", model);
             }
@@ -197,7 +206,8 @@ namespace SwiftDrop.Controllers
                     LastName = u?.LastName ?? string.Empty,
                     PhoneNumber = u?.PhoneNumber,
                     Email = u?.Email ?? string.Empty,
-                    Role = u?.Role ?? string.Empty
+                    Role = u?.Role ?? string.Empty,
+                    SavedAddresses = u != null ? await GetDeliveryAddressesAsync(u.Id) : new()
                 });
             }
 
@@ -215,7 +225,8 @@ namespace SwiftDrop.Controllers
                     LastName = user.LastName,
                     PhoneNumber = user.PhoneNumber,
                     Email = user.Email,
-                    Role = user.Role
+                    Role = user.Role,
+                    SavedAddresses = await GetDeliveryAddressesAsync(user.Id)
                 });
             }
 
@@ -223,6 +234,129 @@ namespace SwiftDrop.Controllers
             await _context.SaveChangesAsync();
 
             TempData["PasswordSuccess"] = "Password changed successfully.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        // ── Delivery Addresses ────────────────────────────────────────────────────
+
+        /// <summary>Saves a new delivery address for the authenticated user.</summary>
+        /// <param name="street">Street name and house number.</param>
+        /// <param name="city">City name.</param>
+        /// <param name="zipCode">Postal code.</param>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(string street, string city, string zipCode)
+        {
+            if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(zipCode))
+            {
+                TempData["AddressError"] = "All address fields are required.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            var duplicate = await _context.Addresses.AnyAsync(a =>
+                a.UserId == user.Id && a.IsDeliveryAddress &&
+                a.Street == street.Trim() && a.City == city.Trim() && a.ZipCode == zipCode.Trim());
+
+            if (!duplicate)
+            {
+                _context.Addresses.Add(new Address
+                {
+                    UserId = user.Id,
+                    Street = street.Trim(),
+                    City = city.Trim(),
+                    ZipCode = zipCode.Trim(),
+                    IsDeliveryAddress = true
+                });
+                await _context.SaveChangesAsync();
+                TempData["AddressSuccess"] = "Address added.";
+            }
+            else
+            {
+                TempData["AddressError"] = "This address is already saved.";
+            }
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+        /// <summary>
+        /// Updates an existing delivery address. Resets geocoordinates so they are
+        /// refreshed by Nominatim on the next checkout.
+        /// </summary>
+        /// <param name="addressId">Primary key of the address to update.</param>
+        /// <param name="street">New street.</param>
+        /// <param name="city">New city.</param>
+        /// <param name="zipCode">New postal code.</param>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> UpdateAddress(int addressId, string street, string city, string zipCode)
+        {
+            if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(zipCode))
+            {
+                TempData["AddressError"] = "All address fields are required.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            var addr = await _context.Addresses.FirstOrDefaultAsync(a =>
+                a.Id == addressId && a.UserId == user.Id && a.IsDeliveryAddress);
+
+            if (addr == null)
+            {
+                TempData["AddressError"] = "Address not found.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            addr.Street = street.Trim();
+            addr.City = city.Trim();
+            addr.ZipCode = zipCode.Trim();
+            addr.Latitude = null;
+            addr.Longitude = null;
+            await _context.SaveChangesAsync();
+
+            TempData["AddressSuccess"] = "Address updated.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        /// <summary>
+        /// Deletes a saved delivery address. Refuses deletion if the address is
+        /// referenced by an existing order (FK constraint).
+        /// </summary>
+        /// <param name="addressId">Primary key of the address to delete.</param>
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DeleteAddress(int addressId)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            var addr = await _context.Addresses.FirstOrDefaultAsync(a =>
+                a.Id == addressId && a.UserId == user.Id && a.IsDeliveryAddress);
+
+            if (addr == null)
+            {
+                TempData["AddressError"] = "Address not found.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            bool usedByOrder = await _context.Orders.AnyAsync(o => o.AddressId == addressId);
+            if (usedByOrder)
+            {
+                TempData["AddressError"] = "This address cannot be deleted because it is linked to an existing order.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            _context.Addresses.Remove(addr);
+            await _context.SaveChangesAsync();
+
+            TempData["AddressSuccess"] = "Address deleted.";
             return RedirectToAction(nameof(Profile));
         }
     }

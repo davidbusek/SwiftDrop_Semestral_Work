@@ -94,6 +94,96 @@
         </form>
     </div>
 
+    <!-- ── Delivery Addresses ───────────────────────────────────────────── -->
+    <div class="cyber-card p-4 border-info mb-4">
+        <h5 class="profile-section-title"><i class="bi bi-geo-alt-fill me-2"></i>Saved Addresses</h5>
+
+        @if (TempData["AddressSuccess"] != null)
+        {
+            <div class="alert border-0 mb-3" style="background:rgba(13,202,240,.1); color:#0dcaf0; border-left:3px solid #0dcaf0 !important;">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["AddressSuccess"]
+            </div>
+        }
+        @if (TempData["AddressError"] != null)
+        {
+            <div class="alert border-0 mb-3" style="background:rgba(220,53,69,.1); color:#dc3545; border-left:3px solid #dc3545 !important;">
+                <i class="bi bi-x-circle-fill me-2"></i>@TempData["AddressError"]
+            </div>
+        }
+
+        @if (!Model.SavedAddresses.Any())
+        {
+            <p class="text-secondary small mb-3">No saved addresses yet.</p>
+        }
+
+        @foreach (var addr in Model.SavedAddresses)
+        {
+            <div class="mb-2 p-3" style="border:1px solid rgba(255,255,255,.1); border-radius:6px;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-white"><i class="bi bi-geo-alt me-2" style="color:#0dcaf0;"></i>@addr.Street, @addr.City @addr.ZipCode</span>
+                    <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-info" onclick="toggleEditAddress(@addr.Id)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="post" asp-action="DeleteAddress" class="m-0">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="addressId" value="@addr.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div id="editAddr_@addr.Id" style="display:none" class="mt-3">
+                    <form method="post" asp-action="UpdateAddress">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="addressId" value="@addr.Id" />
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <input type="text" name="street" value="@addr.Street" class="form-control" placeholder="Street &amp; Number" required />
+                            </div>
+                            <div class="col-md-7">
+                                <input type="text" name="city" value="@addr.City" class="form-control" placeholder="City" required />
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" name="zipCode" value="@addr.ZipCode" class="form-control" placeholder="ZIP" required />
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="toggleEditAddress(@addr.Id)">Cancel</button>
+                                <button type="submit" class="btn btn-sm btn-info text-dark fw-bold"><i class="bi bi-floppy-fill me-1"></i> Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+
+        <button type="button" id="showNewAddrBtn" class="btn btn-outline-info btn-sm mt-1" onclick="document.getElementById('newAddrForm').style.display='block'; this.style.display='none'">
+            <i class="bi bi-plus-circle me-1"></i> Add Address
+        </button>
+        <div id="newAddrForm" style="display:none" class="mt-3 p-3" style="border:1px solid rgba(255,255,255,.1); border-radius:6px;">
+            <form method="post" asp-action="AddAddress">
+                @Html.AntiForgeryToken()
+                <div class="row g-2">
+                    <div class="col-12">
+                        <input type="text" name="street" class="form-control" placeholder="Street &amp; Number" required />
+                    </div>
+                    <div class="col-md-7">
+                        <input type="text" name="city" class="form-control" placeholder="City" required />
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="zipCode" class="form-control" placeholder="ZIP" required />
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-1"
+                                onclick="document.getElementById('newAddrForm').style.display='none'; document.getElementById('showNewAddrBtn').style.display='inline-block'">Cancel</button>
+                        <button type="submit" class="btn btn-sm btn-info text-dark fw-bold"><i class="bi bi-floppy-fill me-1"></i> Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ── Change Password ───────────────────────────────────────────────── -->
     <div class="cyber-card p-4 border-info">
         <h5 class="profile-section-title"><i class="bi bi-key-fill me-2"></i>Change Password</h5>
@@ -140,4 +230,10 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleEditAddress(id) {
+            var el = document.getElementById('editAddr_' + id);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 }

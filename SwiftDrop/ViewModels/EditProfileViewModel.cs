@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using SwiftDrop.Models;
 
 namespace SwiftDrop.ViewModels
 {
@@ -28,5 +30,8 @@ namespace SwiftDrop.ViewModels
 
         /// <summary>Read-only role label shown on the form.</summary>
         public string Role { get; set; } = string.Empty;
+
+        /// <summary>Customer's saved delivery addresses shown in the Addresses section.</summary>
+        public List<Address> SavedAddresses { get; set; } = new();
     }
 }
