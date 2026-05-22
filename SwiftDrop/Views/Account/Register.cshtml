@@ -36,6 +36,12 @@
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
 
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="text-neon fw-bold">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="+420 123 456 789">
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
                     <div class="mb-4">
                         <label asp-for="Password" class="text-neon fw-bold">Security Key (Password)</label>
                         <input asp-for="Password" class="form-control" placeholder="••••••••">

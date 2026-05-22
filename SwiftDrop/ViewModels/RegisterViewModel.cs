@@ -23,5 +23,11 @@ namespace SwiftDrop.ViewModels
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+
+        /// <summary>Contact phone number.</summary>
+        [Required(ErrorMessage = "Phone number is required.")]
+        [Phone(ErrorMessage = "Please enter a valid phone number.")]
+        [MaxLength(20)]
+        public string PhoneNumber { get; set; } = string.Empty;
     }
 }

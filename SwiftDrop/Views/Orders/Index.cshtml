@@ -24,6 +24,7 @@
                             <th class="border-top-0 bg-transparent text-white">Date Initiated</th>
                             <th class="border-top-0 bg-transparent text-white">Total Creds</th>
                             <th class="border-top-0 bg-transparent text-white text-end pe-0">Status</th>
+                            <th class="border-top-0 bg-transparent"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,6 +45,12 @@
                                     <span class="badge bg-dark border @badgeColor text-uppercase">
                                         @displayStatus
                                     </span>
+                                </td>
+                                <td>
+                                    <a asp-action="Track" asp-route-id="@order.Id"
+                                       class="btn btn-sm btn-outline-secondary text-neon border-neon py-0">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }

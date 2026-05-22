@@ -42,6 +42,14 @@ namespace SwiftDrop.Services
         /// <summary>Returns all orders placed by the user with the given email, newest first.</summary>
         /// <param name="userEmail">Email of the user whose orders to retrieve.</param>
         Task<List<Order>> GetUserOrdersByEmailAsync(string userEmail);
+
+        /// <summary>
+        /// Returns a single order with its sub-orders and items included,
+        /// or <c>null</c> if the order does not belong to <paramref name="userEmail"/>.
+        /// </summary>
+        /// <param name="orderId">Primary key of the order to track.</param>
+        /// <param name="userEmail">Email of the authenticated customer — used to verify ownership.</param>
+        Task<Order?> GetOrderForTrackingAsync(int orderId, string userEmail);
     }
 
     /// <summary>EF Core implementation of <see cref="IOrderService"/>.</summary>
@@ -207,6 +215,21 @@ namespace SwiftDrop.Services
             catch { /* geocoding failure is non-fatal */ }
 
             return null;
+        }
+
+        /// <inheritdoc/>
+        public async Task<Order?> GetOrderForTrackingAsync(int orderId, string userEmail)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+            if (user == null) return null;
+
+            return await _context.Orders
+                .Include(o => o.SubOrders)
+                    .ThenInclude(s => s.Restaurant)
+                .Include(o => o.SubOrders)
+                    .ThenInclude(s => s.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == user.Id);
         }
 
         /// <inheritdoc/>

@@ -86,6 +86,7 @@ namespace SwiftDrop.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
                 Role = "Customer",
                 RegisteredAt = DateTime.Now,
